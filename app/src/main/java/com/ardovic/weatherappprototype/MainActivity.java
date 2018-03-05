@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,13 +58,14 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.tv_wind_speed_degrees)
     TextView tvWindSpeedDegrees;
 
-
-    String city = "Ankara, TR";
-
     public final static String CITY_ID = "city_id";
     public final static String CITY_COUNTRY_NAME = "city_country_name";
-    public final static String TABLE = "my_table";
+    public final static String TABLE_1 = "my_table";
     public final static String ID = "_id";
+
+    public String cityCountryName;
+
+    public Cursor cursor;
 
 
     @Override
@@ -73,17 +75,30 @@ public class MainActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        JSONWeatherTask task = new JSONWeatherTask();
-        task.execute(new String[]{city});
 
+        cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
+        actvCityCountryName.setText(cityCountryName);
 
-        //VERY LONG OPERATION
+        if(!cityCountryName.equals("")) {
+            JSONWeatherTask task = new JSONWeatherTask();
+            task.execute(new String[]{cityCountryName});
+        }
 
         //makeNewShortJSON();
-        readStream();
+        if(databaseHelper.isTableExists(cursor, database, TABLE_1)) {
+            long count = DatabaseUtils.queryNumEntries(database, TABLE_1);
+            System.out.println(count);
 
-        long count = DatabaseUtils.queryNumEntries(database, TABLE);
-        System.out.println(count);
+            if(count != 168820) {
+                database.execSQL("DROP TABLE IF EXISTS " + TABLE_1);
+                databaseHelper.createTable1(database);
+                createLocalCityDB();
+            }
+
+        } else {
+            databaseHelper.createTable1(database);
+            createLocalCityDB();
+        }
 
 
         // Create a SimpleCursorAdapter for the State Name field.
@@ -102,13 +117,18 @@ public class MainActivity extends BaseActivity {
                                     int position, long id) {
                 // Get the cursor, positioned to the corresponding row in the
                 // result set
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+                cursor = (Cursor) listView.getItemAtPosition(position);
 
                 // Get the state's capital from this row in the database.
-                String cityCountryName = cursor.getString(cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME));
+                cityCountryName = cursor.getString(cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME));
 
                 // Update the parent class's TextView
                 actvCityCountryName.setText(cityCountryName);
+
+                JSONWeatherTask task = new JSONWeatherTask();
+                task.execute(new String[]{cityCountryName});
+
+
             }
         });
 
@@ -132,29 +152,37 @@ public class MainActivity extends BaseActivity {
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             public Cursor runQuery(CharSequence constraint) {
                 // Search for states whose names begin with the specified letters.
-                Cursor cursor = getMatchingStates(
+                cursor = getMatchingStates(
                         (constraint != null ? constraint.toString() : null));
+
                 return cursor;
             }
+
         });
 
 
         //readFromDatabase();
 
-
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        cursor = null;
+    }
 
     @Override
     protected void onStop() {
         super.onStop();
-        databaseHelper.close();
-    }
+        stopManagingCursor(cursor);
+        cursor = null;
+        sharedPreferences.edit().putString(CITY_COUNTRY_NAME, cityCountryName).apply();
 
+    }
 
     public void readFromDatabase() {
 
-        String rawQuery = "SELECT " + ID + ", " + CITY_ID + ", " + CITY_COUNTRY_NAME + " FROM " + TABLE + " ORDER BY " + CITY_COUNTRY_NAME + " ASC";
+        String rawQuery = "SELECT " + ID + ", " + CITY_ID + ", " + CITY_COUNTRY_NAME + " FROM " + TABLE_1 + " ORDER BY " + CITY_COUNTRY_NAME + " ASC";
 
         Cursor c = database.rawQuery(rawQuery, null);
 
@@ -168,8 +196,7 @@ public class MainActivity extends BaseActivity {
             do {
                 // получаем значения по номерам столбцов и пишем все в лог
                 Log.d("HEX",
-                        "ID = " + c.getInt(idColIndex) +
-                                ", city ID = " + c.getInt(cityIdColIndex) +
+                        "City ID = " + c.getInt(cityIdColIndex) +
                                 ", city and country name = " + c.getString(cityCountryNameColIndex));
                 // переход на следующую строку
                 // а если следующей нет (текущая - последняя), то false - выходим из цикла
@@ -182,38 +209,39 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    public void readStream() {
+    public void createLocalCityDB() {
 
         int i = 0;
 
         ArrayList<ContentValues> cvList = new ArrayList<>();
         ContentValues cv ;
         Gson gson = new GsonBuilder().create();
-        City city;
+        IJ ij;
 
-        try (JsonReader reader = new JsonReader(new InputStreamReader(getAssets().open("shortCityList.json")))) {
+        try (JsonReader reader = new JsonReader(new InputStreamReader(getAssets().open("ijCityList.json")))) {
 
             // Read file in stream mode
             reader.beginArray();
 
             while (reader.hasNext()) {
                 // Read data into object model
-                city = gson.fromJson(reader, City.class);
+                ij = gson.fromJson(reader, IJ.class);
 
                 cv = new ContentValues();
                 i++;
-                cv.put(CITY_ID, city.getCityId());
-                cv.put(CITY_COUNTRY_NAME, city.getCityCountryName());
+                cv.put(CITY_ID, ij.i);
+                cv.put(CITY_COUNTRY_NAME, ij.j);
                 cvList.add(cv);
 
                 if (cvList.size() % 10000 == 0) {
                     System.out.println("Adding 10K to db, current item: " + i);
                     database.beginTransaction();
                     for (ContentValues value : cvList) {
-                        database.insert(TABLE, null, value);
+                        database.insert(TABLE_1, null, value);
                     }
                     database.setTransactionSuccessful();
                     database.endTransaction();
+                    cvList = new ArrayList<>();
                 }
 
             }
@@ -221,7 +249,7 @@ public class MainActivity extends BaseActivity {
             System.out.println("Adding last part to db, current item: " + i);
             database.beginTransaction();
             for (ContentValues value : cvList) {
-                database.insert(TABLE, null, value);
+                database.insert(TABLE_1, null, value);
             }
             database.setTransactionSuccessful();
             database.endTransaction();
@@ -242,36 +270,71 @@ public class MainActivity extends BaseActivity {
         String fname = "newJson.json";
         File file = new File(myDir, fname);
         Gson gson = new GsonBuilder().create();
-        OldCity city;
+        IJ ij;
 
-        try (JsonReader reader = new JsonReader(new InputStreamReader(getAssets().open("cityList.json")));
+        ContentValues cv;
+
+        HashSet<String> set = new HashSet<>();
+
+        try (JsonReader reader = new JsonReader(new InputStreamReader(getAssets().open("abList.json")));
              JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
-            //JsonReader reader = new JsonReader(new InputStreamReader(getAssets().open("cityList.json")));
 
 
 
 
-            //JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file)));
             writer.beginArray();
 
             // Read file in stream mode
             reader.beginArray();
 
 
+
+
             while (reader.hasNext()) {
                 // Read data into object model
-                city = gson.fromJson(reader, OldCity.class);
+                //city = gson.fromJson(reader, OldCity.class);
 
-                writer.beginObject(); // {
-                writer.name("city_id").value(city.getCityId());
-                writer.name("city_country_name").value(city.getCityName() + ", " + city.getCountryName());
-                writer.endObject(); // }
+                ij = gson.fromJson(reader, IJ.class);
 
-                System.out.println(i++);
-                //addToDatabase(city);
+                String cityCountryName = ij.j;
 
+                if(!set.contains(cityCountryName)) {
+
+                    set.add(cityCountryName);
+
+
+                    writer.beginObject();
+                    writer.name("i").value(ij.i);
+                    writer.name("j").value(ij.j);
+                    writer.endObject();
+
+                    System.out.println(i++);
+                } else {
+                    System.out.println("Duplicate detected");
+                }
+
+
+                /*
+                if(!hasObject(cityCountryName)) {
+
+                    cv = new ContentValues();
+                    cv.put(CITY_COUNTRY_NAME, cityCountryName);
+                    database.insert(TABLE_2, null, cv);
+
+
+                    writer.beginObject();
+                    writer.name("city_id").value(city.getCityId());
+                    writer.name("city_country_name").value(cityCountryName);
+                    writer.endObject();
+
+                    System.out.println(i++);
+                } else {
+                    System.out.println("Duplicate detected");
+                }
+                */
 
             }
+
             writer.endArray();
             //writer.close();
 
@@ -286,7 +349,7 @@ public class MainActivity extends BaseActivity {
 
     public Cursor getMatchingStates(String constraint) throws SQLException {
 
-        String queryString = "SELECT " + ID + ", " + CITY_ID + ", " + CITY_COUNTRY_NAME + " FROM " + TABLE;
+        String queryString = "SELECT " + ID + ", " + CITY_ID + ", " + CITY_COUNTRY_NAME + " FROM " + TABLE_1;
 
         if (constraint != null) {
             // Query for any rows where the state name begins with the
@@ -307,7 +370,7 @@ public class MainActivity extends BaseActivity {
             params = null;
         }
         try {
-            Cursor cursor = database.rawQuery(queryString, params);
+            cursor = database.rawQuery(queryString, params);
             if (cursor != null) {
                 this.startManagingCursor(cursor);
                 cursor.moveToFirst();

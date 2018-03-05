@@ -7,13 +7,10 @@ import lombok.Data;
 @Data
 public class City {
 
-    @SerializedName("id")
+    @SerializedName("city_id")
     private int cityId;
 
-    @SerializedName("name")
-    private String cityName;
-
-    @SerializedName("country")
-    private String countryName;
+    @SerializedName("city_country_name")
+    private String cityCountryName;
 
 }

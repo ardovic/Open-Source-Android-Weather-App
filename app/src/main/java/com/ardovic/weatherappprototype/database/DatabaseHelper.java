@@ -1,4 +1,4 @@
-package com.ardovic.weatherappprototype;
+package com.ardovic.weatherappprototype.database;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -30,9 +30,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "city_country_name text" + ");");
     }
 
-    public static boolean isTableExists(Cursor cursor, SQLiteDatabase database, String tableName) {
+    public static boolean isTableExists(SQLiteDatabase database, String tableName) {
 
-        cursor = database.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'", null);
+        Cursor cursor = database.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'", null);
         if(cursor!=null) {
             if(cursor.getCount()>0) {
                 cursor.close();

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.ardovic.weatherappprototype.database.DatabaseHelper;
+
 import javax.inject.Inject;
 
 public abstract class BaseActivity extends AppCompatActivity {

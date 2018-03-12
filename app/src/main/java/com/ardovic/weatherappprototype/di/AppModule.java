@@ -6,7 +6,7 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.ardovic.weatherappprototype.App;
-import com.ardovic.weatherappprototype.DatabaseHelper;
+import com.ardovic.weatherappprototype.database.DatabaseHelper;
 
 import javax.inject.Singleton;
 

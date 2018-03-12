@@ -1,6 +1,7 @@
 package com.ardovic.weatherappprototype;
 
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.SQLException;
@@ -8,15 +9,18 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.app.LoaderManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.ardovic.weatherappprototype.json.JSONConverter;
+import com.ardovic.weatherappprototype.model.IJ;
 import com.ardovic.weatherappprototype.model.Weather;
 import com.ardovic.weatherappprototype.network.HTTPWeatherClient;
 import com.ardovic.weatherappprototype.network.JSONWeatherParser;
@@ -39,7 +43,7 @@ import java.util.HashSet;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @BindView(R.id.actv_city_country_name)
     AutoCompleteTextView actvCityCountryName;
@@ -65,7 +69,7 @@ public class MainActivity extends BaseActivity {
 
     public String cityCountryName;
 
-    public Cursor cursor;
+    public SimpleCursorAdapter mAdapter;
 
 
     @Override
@@ -84,8 +88,10 @@ public class MainActivity extends BaseActivity {
             task.execute(new String[]{cityCountryName});
         }
 
-        //makeNewShortJSON();
-        if(databaseHelper.isTableExists(cursor, database, TABLE_1)) {
+
+        //JSONConverter.getInstance().makeNewShortJSON(this, null, null, null);
+
+        if(databaseHelper.isTableExists(database, TABLE_1)) {
             long count = DatabaseUtils.queryNumEntries(database, TABLE_1);
             System.out.println(count);
 
@@ -101,14 +107,18 @@ public class MainActivity extends BaseActivity {
         }
 
 
+
         // Create a SimpleCursorAdapter for the State Name field.
-        SimpleCursorAdapter adapter =
-                new SimpleCursorAdapter(this,
+        mAdapter = new SimpleCursorAdapter(this,
                         R.layout.dropdown_text,
                         null,
                         new String[]{CITY_COUNTRY_NAME},
-                        new int[]{R.id.text});
-        actvCityCountryName.setAdapter(adapter);
+                        new int[]{R.id.text},0);
+
+        getLoaderManager().initLoader(0, null, this);
+
+
+
 
         // Set an OnItemClickListener, to update dependent fields when
         // a choice is made in the AutoCompleteTextView.
@@ -117,7 +127,7 @@ public class MainActivity extends BaseActivity {
                                     int position, long id) {
                 // Get the cursor, positioned to the corresponding row in the
                 // result set
-                cursor = (Cursor) listView.getItemAtPosition(position);
+                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
                 // Get the state's capital from this row in the database.
                 cityCountryName = cursor.getString(cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME));
@@ -132,27 +142,15 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        adapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
-            @Override
-            public CharSequence convertToString(Cursor cursor) {
-                // Get the label for this row out of the "state" column
 
-
-                final int columnIndex = cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME);
-                final String cityCountryName = cursor.getString(columnIndex);
-
-                return (cityCountryName);
-
-            }
-        });
 
 
         // Set the FilterQueryProvider, to run queries for choices
         // that match the specified input.
-        adapter.setFilterQueryProvider(new FilterQueryProvider() {
+        mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
             public Cursor runQuery(CharSequence constraint) {
                 // Search for states whose names begin with the specified letters.
-                cursor = getMatchingStates(
+                Cursor cursor = getMatchingStates(
                         (constraint != null ? constraint.toString() : null));
 
                 return cursor;
@@ -160,22 +158,18 @@ public class MainActivity extends BaseActivity {
 
         });
 
+        actvCityCountryName.setAdapter(mAdapter);
 
         //readFromDatabase();
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        cursor = null;
-    }
 
     @Override
     protected void onStop() {
         super.onStop();
-        stopManagingCursor(cursor);
-        cursor = null;
+
+
         sharedPreferences.edit().putString(CITY_COUNTRY_NAME, cityCountryName).apply();
 
     }
@@ -261,90 +255,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void makeNewShortJSON() {
-        int i = 0;
-
-        String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root + "/new_json");
-        myDir.mkdirs();
-        String fname = "newJson.json";
-        File file = new File(myDir, fname);
-        Gson gson = new GsonBuilder().create();
-        IJ ij;
-
-        ContentValues cv;
-
-        HashSet<String> set = new HashSet<>();
-
-        try (JsonReader reader = new JsonReader(new InputStreamReader(getAssets().open("abList.json")));
-             JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
-
-
-
-
-            writer.beginArray();
-
-            // Read file in stream mode
-            reader.beginArray();
-
-
-
-
-            while (reader.hasNext()) {
-                // Read data into object model
-                //city = gson.fromJson(reader, OldCity.class);
-
-                ij = gson.fromJson(reader, IJ.class);
-
-                String cityCountryName = ij.j;
-
-                if(!set.contains(cityCountryName)) {
-
-                    set.add(cityCountryName);
-
-
-                    writer.beginObject();
-                    writer.name("i").value(ij.i);
-                    writer.name("j").value(ij.j);
-                    writer.endObject();
-
-                    System.out.println(i++);
-                } else {
-                    System.out.println("Duplicate detected");
-                }
-
-
-                /*
-                if(!hasObject(cityCountryName)) {
-
-                    cv = new ContentValues();
-                    cv.put(CITY_COUNTRY_NAME, cityCountryName);
-                    database.insert(TABLE_2, null, cv);
-
-
-                    writer.beginObject();
-                    writer.name("city_id").value(city.getCityId());
-                    writer.name("city_country_name").value(cityCountryName);
-                    writer.endObject();
-
-                    System.out.println(i++);
-                } else {
-                    System.out.println("Duplicate detected");
-                }
-                */
-
-            }
-
-            writer.endArray();
-            //writer.close();
-
-            //reader.close();
-        } catch (UnsupportedEncodingException ex) {
-
-        } catch (IOException ex) {
-
-        }
-    }
 
 
     public Cursor getMatchingStates(String constraint) throws SQLException {
@@ -370,7 +280,7 @@ public class MainActivity extends BaseActivity {
             params = null;
         }
         try {
-            cursor = database.rawQuery(queryString, params);
+            Cursor cursor = database.rawQuery(queryString, params);
             if (cursor != null) {
                 this.startManagingCursor(cursor);
                 cursor.moveToFirst();
@@ -382,6 +292,28 @@ public class MainActivity extends BaseActivity {
 
         return null;
     }
+
+    @Override
+    public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
+        //return new CursorLoader(this, CONTENT_URI, PROJECTION, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
+        mAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(android.content.Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
+    }
+
+
+
+
+
+
 
     private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
 

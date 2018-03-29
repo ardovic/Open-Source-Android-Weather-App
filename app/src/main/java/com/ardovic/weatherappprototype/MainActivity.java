@@ -1,10 +1,13 @@
 package com.ardovic.weatherappprototype;
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.ardovic.weatherappprototype.database.DatabaseHelper;
 import com.ardovic.weatherappprototype.json.JSONConverter;
 import com.ardovic.weatherappprototype.model.IJ;
 import com.ardovic.weatherappprototype.model.Weather;
@@ -71,6 +75,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     public SimpleCursorAdapter mAdapter;
 
+    public DatabaseHelper databaseHelper;
+    public SQLiteDatabase database;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +86,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         ButterKnife.bind(this);
 
+        /*
+        FragmentManager fm = getFragmentManager();
+        DialogFragment newFragment = new AddingCityDialogFragment();
+        newFragment.show(fm, "abc");
+        */
 
         cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
         actvCityCountryName.setText(cityCountryName);
@@ -91,20 +103,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         //JSONConverter.getInstance().makeNewShortJSON(this, null, null, null);
 
-        if(databaseHelper.isTableExists(database, TABLE_1)) {
-            long count = DatabaseUtils.queryNumEntries(database, TABLE_1);
-            System.out.println(count);
-
-            if(count != 168820) {
-                database.execSQL("DROP TABLE IF EXISTS " + TABLE_1);
-                databaseHelper.createTable1(database);
-                createLocalCityDB();
-            }
-
-        } else {
-            databaseHelper.createTable1(database);
-            createLocalCityDB();
-        }
 
 
 
@@ -164,6 +162,40 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        database.close();
+        databaseHelper = null;
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        databaseHelper = new DatabaseHelper(this);
+        database = databaseHelper.getWritableDatabase();
+
+        if(databaseHelper.isTableExists(database, TABLE_1)) {
+            long count = DatabaseUtils.queryNumEntries(database, TABLE_1);
+            System.out.println(count);
+
+            if(count != 168820) {
+                database.execSQL("DROP TABLE IF EXISTS " + TABLE_1);
+                databaseHelper.createTable1(database);
+                createLocalCityDB();
+            }
+
+        } else {
+            databaseHelper.createTable1(database);
+            createLocalCityDB();
+        }
+
+
+
+    }
 
     @Override
     protected void onStop() {

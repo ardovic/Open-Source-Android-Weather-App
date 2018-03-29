@@ -41,6 +41,7 @@ public class AppModule {
         return context.getResources();
     }
 
+    /*
     @Provides
     @Singleton
     DatabaseHelper providesDatabaseHelper(Context context) {
@@ -52,5 +53,6 @@ public class AppModule {
     SQLiteDatabase providesDatabase(DatabaseHelper databaseHelper) {
         return databaseHelper.getWritableDatabase();
     }
+    */
 
 }

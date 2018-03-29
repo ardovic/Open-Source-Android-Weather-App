@@ -32,7 +32,7 @@ dependencies {
 
     compileOnly "org.projectlombok:lombok:$verLombok"
     annotationProcessor "org.projectlombok:lombok:$verLombok"
-
+    
     compile "com.google.dagger:dagger:$verDagger"
     annotationProcessor "com.google.dagger:dagger-compiler:$verDagger"
 

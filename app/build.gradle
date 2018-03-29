@@ -30,13 +30,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compileOnly "org.projectlombok:lombok:$verLombok"
+    implementation "org.projectlombok:lombok:$verLombok"
     annotationProcessor "org.projectlombok:lombok:$verLombok"
     
-    compile "com.google.dagger:dagger:$verDagger"
+    implementation "com.google.dagger:dagger:$verDagger"
     annotationProcessor "com.google.dagger:dagger-compiler:$verDagger"
 
-    compile "com.jakewharton:butterknife:$verKnife"
+    implementation "com.jakewharton:butterknife:$verKnife"
     annotationProcessor "com.jakewharton:butterknife-compiler:$verKnife"
 
     //implementation 'com.j256.ormlite:ormlite-android:5.0'

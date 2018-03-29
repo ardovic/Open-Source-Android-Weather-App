@@ -1,8 +1,7 @@
 package com.ardovic.weatherappprototype;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -13,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.LoaderManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.ardovic.weatherappprototype.database.DatabaseHelper;
 import com.ardovic.weatherappprototype.json.JSONConverter;
 import com.ardovic.weatherappprototype.model.IJ;
 import com.ardovic.weatherappprototype.model.Weather;
@@ -42,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import butterknife.BindView;
@@ -70,27 +70,20 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public final static String CITY_COUNTRY_NAME = "city_country_name";
     public final static String TABLE_1 = "my_table";
     public final static String ID = "_id";
+    public final static String[] mProjection = {ID, CITY_COUNTRY_NAME};
+    private static final String TAG = "MainActivity";
+    private static final String CITY_ARGS = "city_weather_arg";
 
     public String cityCountryName;
 
     public SimpleCursorAdapter mAdapter;
-
-    public DatabaseHelper databaseHelper;
-    public SQLiteDatabase database;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind(this);
-
-        /*
-        FragmentManager fm = getFragmentManager();
-        DialogFragment newFragment = new AddingCityDialogFragment();
-        newFragment.show(fm, "abc");
-        */
 
         cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
         actvCityCountryName.setText(cityCountryName);
@@ -100,23 +93,36 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             task.execute(new String[]{cityCountryName});
         }
 
-
         //JSONConverter.getInstance().makeNewShortJSON(this, null, null, null);
 
-
+        if (database.isOpen()) {
+            checkDatabaseState();
+        } else {
+            database = databaseHelper.getReadableDatabase();
+            checkDatabaseState();
+        }
 
 
         // Create a SimpleCursorAdapter for the State Name field.
         mAdapter = new SimpleCursorAdapter(this,
-                        R.layout.dropdown_text,
-                        null,
-                        new String[]{CITY_COUNTRY_NAME},
-                        new int[]{R.id.text},0);
-
-        getLoaderManager().initLoader(0, null, this);
-
-
-
+                R.layout.dropdown_text,
+                null,
+                new String[]{CITY_COUNTRY_NAME},
+                new int[]{R.id.text},0);
+        mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+                if (constraint != null) {
+                    if (constraint.length() >= 3 && !TextUtils.isEmpty(constraint)) {
+                        Bundle bundle = new Bundle();
+                        String query = charArrayUpperCaser(constraint);
+                        bundle.putString(CITY_ARGS, query);
+                        getLoaderManager().restartLoader(0, bundle, MainActivity.this).forceLoad();
+                    }
+                }
+                return null;
+            }
+        });
 
         // Set an OnItemClickListener, to update dependent fields when
         // a choice is made in the AutoCompleteTextView.
@@ -135,103 +141,19 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
                 JSONWeatherTask task = new JSONWeatherTask();
                 task.execute(new String[]{cityCountryName});
-
-
             }
-        });
-
-
-
-
-        // Set the FilterQueryProvider, to run queries for choices
-        // that match the specified input.
-        mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            public Cursor runQuery(CharSequence constraint) {
-                // Search for states whose names begin with the specified letters.
-                Cursor cursor = getMatchingStates(
-                        (constraint != null ? constraint.toString() : null));
-
-                return cursor;
-            }
-
         });
 
         actvCityCountryName.setAdapter(mAdapter);
 
-        //readFromDatabase();
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        database.close();
-        databaseHelper = null;
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        databaseHelper = new DatabaseHelper(this);
-        database = databaseHelper.getWritableDatabase();
-
-        if(databaseHelper.isTableExists(database, TABLE_1)) {
-            long count = DatabaseUtils.queryNumEntries(database, TABLE_1);
-            System.out.println(count);
-
-            if(count != 168820) {
-                database.execSQL("DROP TABLE IF EXISTS " + TABLE_1);
-                databaseHelper.createTable1(database);
-                createLocalCityDB();
-            }
-
-        } else {
-            databaseHelper.createTable1(database);
-            createLocalCityDB();
-        }
-
-
-
-    }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-
         sharedPreferences.edit().putString(CITY_COUNTRY_NAME, cityCountryName).apply();
-
-    }
-
-    public void readFromDatabase() {
-
-        String rawQuery = "SELECT " + ID + ", " + CITY_ID + ", " + CITY_COUNTRY_NAME + " FROM " + TABLE_1 + " ORDER BY " + CITY_COUNTRY_NAME + " ASC";
-
-        Cursor c = database.rawQuery(rawQuery, null);
-
-        if (c.moveToFirst()) {
-
-            // определяем номера столбцов по имени в выборке
-            int idColIndex = c.getColumnIndex(ID);
-            int cityIdColIndex = c.getColumnIndex(CITY_ID);
-            int cityCountryNameColIndex = c.getColumnIndex(CITY_COUNTRY_NAME);
-
-            do {
-                // получаем значения по номерам столбцов и пишем все в лог
-                Log.d("HEX",
-                        "City ID = " + c.getInt(cityIdColIndex) +
-                                ", city and country name = " + c.getString(cityCountryNameColIndex));
-                // переход на следующую строку
-                // а если следующей нет (текущая - последняя), то false - выходим из цикла
-
-
-            } while (c.moveToNext());
-        } else
-            Log.d("HEX", "0 rows");
-        c.close();
 
     }
 
@@ -280,60 +202,26 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             database.setTransactionSuccessful();
             database.endTransaction();
 
-        } catch (UnsupportedEncodingException ex) {
-
         } catch (IOException ex) {
-
+            ex.printStackTrace();
         }
-    }
-
-
-
-    public Cursor getMatchingStates(String constraint) throws SQLException {
-
-        String queryString = "SELECT " + ID + ", " + CITY_ID + ", " + CITY_COUNTRY_NAME + " FROM " + TABLE_1;
-
-        if (constraint != null) {
-            // Query for any rows where the state name begins with the
-            // string specified in constraint.
-            //
-            // NOTE:
-            // If wildcards are to be used in a rawQuery, they must appear
-            // in the query parameters, and not in the query string proper.
-            // See http://code.google.com/p/android/issues/detail?id=3153
-            constraint = constraint.trim() + "%";
-            queryString += " WHERE " + CITY_COUNTRY_NAME + " LIKE ?";
-        }
-        String params[] = {constraint};
-
-        if (constraint == null) {
-            // If no parameters are used in the query,
-            // the params arg must be null.
-            params = null;
-        }
-        try {
-            Cursor cursor = database.rawQuery(queryString, params);
-            if (cursor != null) {
-                this.startManagingCursor(cursor);
-                cursor.moveToFirst();
-                return cursor;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     @Override
     public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
-        //return new CursorLoader(this, CONTENT_URI, PROJECTION, null, null, null);
+        String s = args.getString(CITY_ARGS);
+        WeatherCursorLoader loader = null;
+        if (s != null && !TextUtils.isEmpty(s)) {
+            loader = new WeatherCursorLoader(this, database, s);
+        }
+        return loader;
     }
 
     @Override
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
+        Log.d(TAG, "onLoadFinished: " + Arrays.toString(cursor.getColumnNames()));
         mAdapter.swapCursor(cursor);
+
     }
 
     @Override
@@ -342,10 +230,14 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     }
 
 
-
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mAdapter.getCursor() != null) {
+            mAdapter.getCursor().close();
+        }
+        database.close();
+    }
 
     private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
 
@@ -372,8 +264,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         @Override
         protected void onPostExecute(Weather weather) {
             super.onPostExecute(weather);
-
-
             ivConditionIcon.setImageBitmap(weather.getIcon());
 
             tvCityCountryName.setText(weather.getLocation().getCity() + ", " + weather.getLocation().getCountry());
@@ -383,6 +273,52 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             tvPressure.setText(weather.getCurrentCondition().getPressure() + " hPa");
             tvWindSpeedDegrees.setText(weather.getWind().getSpeed() + " mps, " + weather.getWind().getDegrees() + (char) 0x00B0);
 
+        }
+    }
+
+    private static class WeatherCursorLoader extends CursorLoader {
+
+        private SQLiteDatabase mSQLiteDatabase;
+        private String mQuery;
+
+        WeatherCursorLoader(Context context, SQLiteDatabase cDatabase, String s) {
+            super(context);
+            mSQLiteDatabase = cDatabase;
+            mQuery = s + "%";
+            Log.d(TAG, "WeatherCursorLoader: " + mQuery);
+        }
+
+
+        @Override
+        public Cursor loadInBackground() {
+            return mSQLiteDatabase.query(TABLE_1, mProjection,
+                    CITY_COUNTRY_NAME + " like ?", new String[] {mQuery},
+                    null, null, null, "50");
+        }
+    }
+
+    private String charArrayUpperCaser(CharSequence sequence) {
+        Character charAt = sequence.charAt(0);
+        String s = sequence.toString().replace(sequence.charAt(0), charAt.toString().toUpperCase().charAt(0));
+        Log.d(TAG, "charArrayUpperCaser: " + s);
+        return s;
+    }
+
+    private void checkDatabaseState() {
+        if (databaseHelper.isTableExists(database, TABLE_1)) {
+            long count = DatabaseUtils.queryNumEntries(database, TABLE_1);
+            System.out.println(count);
+            Log.d(TAG, "checkDatabaseState: start checking database");
+            if (count != 168820) {
+                database.execSQL("DROP TABLE IF EXISTS " + TABLE_1);
+                databaseHelper.createTable1(database);
+                createLocalCityDB();
+                Log.d(TAG, "checkDatabaseState: database is broken");
+            }
+        } else {
+            databaseHelper.createTable1(database);
+            createLocalCityDB();
+            Log.d(TAG, "checkDatabaseState: first start database");
         }
     }
 }

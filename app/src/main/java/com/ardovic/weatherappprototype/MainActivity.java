@@ -149,7 +149,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -221,7 +220,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
         Log.d(TAG, "onLoadFinished: " + Arrays.toString(cursor.getColumnNames()));
         mAdapter.swapCursor(cursor);
-
     }
 
     @Override

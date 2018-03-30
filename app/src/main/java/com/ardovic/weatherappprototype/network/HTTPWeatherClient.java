@@ -29,6 +29,7 @@ public class HTTPWeatherClient {
                     .appendPath(location)
                     .appendQueryParameter("APPID", API_KEY)
                     .build().toString());
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

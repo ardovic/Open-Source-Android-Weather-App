@@ -19,11 +19,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     public Context context;
     @Inject
     public Resources resources;
-    @Inject
+    /*@Inject
     public DatabaseHelper databaseHelper;
     @Inject
     public SQLiteDatabase database;
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -153,7 +153,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 mFetchThreadData.queueResponce(position, cityCountryName);
                 InputMethodManager methodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 if (methodManager != null) {
-                    methodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    methodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             }
         });

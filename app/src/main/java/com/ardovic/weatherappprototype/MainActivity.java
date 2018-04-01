@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
@@ -150,6 +151,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 // Update the parent class's TextView
                 actvCityCountryName.setText(cityCountryName);
                 mFetchThreadData.queueResponce(position, cityCountryName);
+                InputMethodManager methodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if (methodManager != null) {
+                    methodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
             }
         });
 

@@ -150,8 +150,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 // Update the parent class's TextView
                 actvCityCountryName.setText(cityCountryName);
                 mFetchThreadData.queueResponce(position, cityCountryName);
-//                JSONWeatherTask task = new JSONWeatherTask();
-//                task.execute(new String[]{cityCountryName});
+
             }
         });
 

@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
@@ -70,7 +71,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     @Override
     protected void onStart() {
         super.onStart();
-        if(!cityCountryName.equals("")) {
+        if (!cityCountryName.equals("")) {
             mFetchThreadData.queueResponce(0, cityCountryName);
         }
     }
@@ -104,7 +105,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 R.layout.dropdown_text,
                 null,
                 new String[]{CITY_COUNTRY_NAME},
-                new int[]{R.id.text},0);
+                new int[]{R.id.text}, 0);
         mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence constraint) {
@@ -137,6 +138,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 mFetchThreadData.queueResponce(position, cityCountryName);
 //                JSONWeatherTask task = new JSONWeatherTask();
 //                task.execute(new String[]{cityCountryName});
+
+                hideKeyboard();
+
             }
         });
 
@@ -157,7 +161,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         int i = 0;
 
         ArrayList<ContentValues> cvList = new ArrayList<>();
-        ContentValues cv ;
+        ContentValues cv;
         Gson gson = new GsonBuilder().create();
         IJ ij;
 
@@ -251,7 +255,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         @Override
         public Cursor loadInBackground() {
             return mSQLiteDatabase.query(TABLE_1, mProjection,
-                    CITY_COUNTRY_NAME + " like ?", new String[] {mQuery},
+                    CITY_COUNTRY_NAME + " like ?", new String[]{mQuery},
                     null, null, null, "50");
         }
     }

@@ -1,17 +1,13 @@
 package com.ardovic.weatherappprototype;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.app.LoaderManager;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,28 +20,17 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ardovic.weatherappprototype.json.JSONConverter;
 import com.ardovic.weatherappprototype.model.IJ;
 import com.ardovic.weatherappprototype.model.Weather;
 import com.ardovic.weatherappprototype.network.FetchThreadData;
-import com.ardovic.weatherappprototype.network.HTTPWeatherClient;
-import com.ardovic.weatherappprototype.network.JSONWeatherParser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 
-import org.json.JSONException;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

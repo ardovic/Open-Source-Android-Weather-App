@@ -23,7 +23,8 @@ public class FetchThreadDataTest {
 
     @Before
     public void setUp() throws Exception {
-        fetchThreadData = new FetchThreadData<>(new Handler());
+        Handler handler = mock(Handler.class);
+        fetchThreadData = new FetchThreadData<>(handler);
         fetchThreadData.start();
         fetchThreadData.getLooper();
     }

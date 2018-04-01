@@ -16,6 +16,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildToolsVersion '26.0.2'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 def verLombok = '1.16.20'
@@ -23,25 +28,24 @@ def verDagger = '2.14.1'
 def verKnife = '8.8.1'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-
     implementation "org.projectlombok:lombok:$verLombok"
     annotationProcessor "org.projectlombok:lombok:$verLombok"
-    
     implementation "com.google.dagger:dagger:$verDagger"
     annotationProcessor "com.google.dagger:dagger-compiler:$verDagger"
-
     implementation "com.jakewharton:butterknife:$verKnife"
     annotationProcessor "com.jakewharton:butterknife-compiler:$verKnife"
-
     //implementation 'com.j256.ormlite:ormlite-android:5.0'
-
     //implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-
     implementation 'com.google.code.gson:gson:2.8.2'
+    testCompile 'junit:junit:4.12'
+    // required if you want to use Mockito for unit tests
+    testCompile 'org.mockito:mockito-core:2.7.22'
+    // required if you want to use Mockito for Android tests
+    androidTestCompile 'org.mockito:mockito-android:2.7.22'
+
 }

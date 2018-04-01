@@ -67,6 +67,13 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     public SimpleCursorAdapter mAdapter;
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!cityCountryName.equals("")) {
+            mFetchThreadData.queueResponce(0, cityCountryName);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +87,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         mFetchThreadData.start();
         mFetchThreadData.getLooper();
         initServerResponse();
-        if(!cityCountryName.equals("")) {
-            mFetchThreadData.queueResponce(0, cityCountryName);
-        }
+
 
         //JSONConverter.getInstance().makeNewShortJSON(this, null, null, null);
 
@@ -227,7 +232,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         }
         database.close();
         mFetchThreadData.clearQueue();
-        mFetchThreadData.quit();
     }
 
 

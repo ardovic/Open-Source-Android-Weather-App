@@ -1,17 +1,14 @@
 package com.ardovic.weatherappprototype;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.app.LoaderManager;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,28 +18,19 @@ import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.ardovic.weatherappprototype.json.JSONConverter;
 import com.ardovic.weatherappprototype.model.IJ;
 import com.ardovic.weatherappprototype.model.Weather;
-import com.ardovic.weatherappprototype.network.HTTPWeatherClient;
-import com.ardovic.weatherappprototype.network.JSONWeatherParser;
+import com.ardovic.weatherappprototype.network.FetchThreadData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 
-import org.json.JSONException;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,7 +61,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public final static String[] mProjection = {ID, CITY_COUNTRY_NAME};
     private static final String TAG = "MainActivity";
     private static final String CITY_ARGS = "city_weather_arg";
-
+    FetchThreadData<Integer> mFetchThreadData;
+    private Handler mHandler = new Handler();
     public String cityCountryName;
 
     public SimpleCursorAdapter mAdapter;
@@ -87,10 +76,12 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
         actvCityCountryName.setText(cityCountryName);
-
+        mFetchThreadData = new FetchThreadData<>(mHandler);
+        mFetchThreadData.start();
+        mFetchThreadData.getLooper();
+        initServerResponse();
         if(!cityCountryName.equals("")) {
-            JSONWeatherTask task = new JSONWeatherTask();
-            task.execute(new String[]{cityCountryName});
+            mFetchThreadData.queueResponce(0, cityCountryName);
         }
 
         //JSONConverter.getInstance().makeNewShortJSON(this, null, null, null);
@@ -138,9 +129,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
                 // Update the parent class's TextView
                 actvCityCountryName.setText(cityCountryName);
-
-                JSONWeatherTask task = new JSONWeatherTask();
-                task.execute(new String[]{cityCountryName});
+                mFetchThreadData.queueResponce(position, cityCountryName);
+//                JSONWeatherTask task = new JSONWeatherTask();
+//                task.execute(new String[]{cityCountryName});
             }
         });
 
@@ -235,44 +226,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             mAdapter.getCursor().close();
         }
         database.close();
+        mFetchThreadData.clearQueue();
+        mFetchThreadData.quit();
     }
 
-    private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
-
-        @Override
-        protected Weather doInBackground(String... params) {
-            Weather weather = new Weather();
-            String data = ((new HTTPWeatherClient()).getWeatherData(params[0]));
-
-            try {
-                weather = JSONWeatherParser.getWeather(data);
-                Bitmap icon = HTTPWeatherClient.getResizedBitmap(
-                        HTTPWeatherClient.getBitmapFromURL(weather.getCurrentCondition().getIcon()),
-                        100,
-                        100);
-                weather.setIcon(icon);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return weather;
-
-        }
-
-        @Override
-        protected void onPostExecute(Weather weather) {
-            super.onPostExecute(weather);
-            ivConditionIcon.setImageBitmap(weather.getIcon());
-
-            tvCityCountryName.setText(weather.getLocation().getCity() + ", " + weather.getLocation().getCountry());
-            tvConditionDescription.setText(weather.getCurrentCondition().getCondition() + " (" + weather.getCurrentCondition().getDescription() + ")");
-            tvTemperature.setText(", " + Math.round((weather.getTemperature().getTemperature() - 273.15)) + (char) 0x00B0 + "C");
-            tvHumidity.setText(weather.getCurrentCondition().getHumidity() + "%");
-            tvPressure.setText(weather.getCurrentCondition().getPressure() + " hPa");
-            tvWindSpeedDegrees.setText(weather.getWind().getSpeed() + " mps, " + weather.getWind().getDegrees() + (char) 0x00B0);
-
-        }
-    }
 
     private static class WeatherCursorLoader extends CursorLoader {
 
@@ -318,6 +275,26 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             createLocalCityDB();
             Log.d(TAG, "checkDatabaseState: first start database");
         }
+    }
+
+    private void initServerResponse() {
+        mFetchThreadData.setWeatherFetchListener(new FetchThreadData.WeatherFetchListener<Integer>() {
+            @Override
+            public void onDataFetched(Integer o, Weather weather) {
+                if (weather != null) {
+                    ivConditionIcon.setImageBitmap(weather.getIcon());
+                    tvCityCountryName.setText(weather.getLocation().getCity() + ", " + weather.getLocation().getCountry());
+                    tvConditionDescription.setText(weather.getCurrentCondition().getCondition() + " (" + weather.getCurrentCondition().getDescription() + ")");
+                    tvTemperature.setText(", " + Math.round((weather.getTemperature().getTemperature() - 273.15)) + (char) 0x00B0 + "C");
+                    tvHumidity.setText(weather.getCurrentCondition().getHumidity() + "%");
+                    tvPressure.setText(weather.getCurrentCondition().getPressure() + " hPa");
+                    tvWindSpeedDegrees.setText(weather.getWind().getSpeed() + " mps, " + weather.getWind().getDegrees() + (char) 0x00B0);
+                } else {
+                    Toast.makeText(MainActivity.this, "Check internet connection or try again later", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+        });
     }
 }
 

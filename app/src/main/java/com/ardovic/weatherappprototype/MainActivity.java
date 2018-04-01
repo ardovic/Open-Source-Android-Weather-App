@@ -151,6 +151,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 actvCityCountryName.setText(cityCountryName);
                 mFetchThreadData.queueResponce(position, cityCountryName);
 
+                
             }
         });
 

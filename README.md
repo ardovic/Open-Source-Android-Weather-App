@@ -16,6 +16,11 @@ If you are looking for an entry-level open source project to contribute to, you 
 
 <b>Step 6:</b> Make a pull request and wait for approval
 
+## Few guidelines:
+
+Feel free to submit a new issue if you find a new bug or you have any suggestion for improvement
+
+Write your task related questions or comments under that specific tasks issue thread
 
 
 

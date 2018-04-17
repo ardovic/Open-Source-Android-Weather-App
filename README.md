@@ -16,15 +16,30 @@ If you are looking for an entry-level open source project to contribute to, you 
 
 <b>Step 6:</b> Make a pull request and wait for approval
 
-## Few guidelines:
-
 Feel free to submit a new issue if you find a new bug or you have any suggestion for improvement
 
 Write your task related questions or comments under that specific tasks issue thread
 
+## FAQ:
 
+<i>Q - I found a bug and I can't (or don’t want to) fix it, how can I add it to the issues list?</i>
 
+<b>A - Check the issues list and see if it already has that bug. If not, submit a new issue with the "bug" label</b>
 
+<i>Q - I found a bug and I want to fix it, is it ok if I just do that and make a pull request?</i>
+  
+<b>A - No, it's not ok. Before attempting to do any work it is highly recommended that you check with the current issues list. It might happen, that there is already a similar issue, and even someone already working on it (assigned to it).</b>
+  
+<i>Q - There is no issue for the bug that I found and want to fix, what should I do?</i>
+  
+<b>A - It is recommended that you submit a new issue, get that issue assigned on you, and then work on it. However, if the amount of expected work is relatively small (< 1 day), you can simply fix the bug and make a pull request right away.</b>
 
+<i>Q - I want to work on an issue, can I work on it right away?</i>
+
+<b>A - It's recommended that you leave a comment below that issue, and ask the community to assign it to you.</b>
+
+## Support:
+
+If you wish to participate, but unsure where to start, feel free to email me (Serj Ardovic) to ardovic@gmail.com or message on https://www.facebook.com/ardovic. 
 
 

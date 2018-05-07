@@ -1,4 +1,4 @@
-# Open Weather App
+# Open Weather Android Application
 
 "Open Weather App" is a beginner friendly open source android application. The main mission of this project is to provide android enthusiast with a platform where they can advance their skills in most popular libraries and design concepts. You may wonder - why we chose a weather app? The answer is simple - it turns out that weather application can cover just about every topic of modern android development.
 

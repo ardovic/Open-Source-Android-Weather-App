@@ -32,7 +32,7 @@ Write your task related questions or comments under that specific tasks issue th
   
 <i>Q - There is no issue for the bug that I found and want to fix, what should I do?</i>
   
-<b>A - It is recommended that you submit a new issue, get that issue assigned on you, and then work on it. However, if the amount of expected work is relatively small (< 1 day), you can simply fix the bug and make a pull request right away.</b>
+<b>A - It is recommended that you submit a new issue, get that issue assigned on you, and then work on it. However, if the amount of expected work is relatively small (< 1 day), you can simply fix the bug and make a pull request right away.</b> <i>P.S: Sometimes your name might not appear in the assignee list, hence you might not get assigned, yet a confirmation message from OP is enough in most cases.</i>
 
 <i>Q - I want to work on an issue, can I work on it right away?</i>
 
@@ -40,6 +40,4 @@ Write your task related questions or comments under that specific tasks issue th
 
 ## Support:
 
-If you wish to participate, but unsure where to start, feel free to email me (Serj Ardovic) to ardovic@gmail.com or message on https://www.facebook.com/ardovic. 
-
-
+If you wish to participate, but unsure where to start, feel free to email PO (Serj Ardovic) to ardovic@gmail.com or message on https://www.facebook.com/ardovic.

@@ -1,4 +1,4 @@
-<b>Important notice</b: This project uses Project Lombok (https://projectlombok.org/setup/android) library for data classes. In order for this app code to compile without errors (s.a. Cannot resolve symbol 'R'), please install the Lombok plugin onto your Android Studio. More information on how to install the plugin can be found in the link above.
+<b>Important notice</b>: This project uses Project Lombok (https://projectlombok.org/setup/android) library for data classes. In order for this app code to compile without errors (s.a. Cannot resolve symbol 'R'), please install the Lombok plugin onto your Android Studio. More information on how to install the plugin can be found in the link above.
 
 # Open Weather App
 

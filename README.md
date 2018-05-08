@@ -1,6 +1,6 @@
 <b>Important notice</b>: This project uses Project Lombok (https://projectlombok.org/setup/android) library for data classes. In order for this app code to compile without errors (s.a. Cannot resolve symbol 'R'), please install the Lombok plugin onto your Android Studio. More information on how to install the plugin can be found in the link above.
 
-# Open Weather App
+# Open Weather Android Application
 
 "Open Weather App" is a beginner friendly open source android application. The main mission of this project is to provide android enthusiast with a platform where they can advance their skills in most popular libraries and design concepts. You may wonder - why we chose a weather app? The answer is simple - it turns out that weather application can cover just about every topic of modern android development.
 
@@ -10,13 +10,13 @@ If you are looking for an entry-level open source project to contribute to, you 
 
 <b>Step 2:</b> Fork your own copy of this project
 
-<b>Step 3:</b> Clone your forked repository to your computer
+<b>Step 3:</b> Clone your forked repository to your computer (not required if you make changes on GitHub)
 
-<b>Step 4:</b> Write your code
+<b>Step 4:</b> Write your code / add files / make changes
 
-<b>Step 5:</b> Commit and push changes to your fork
+<b>Step 5:</b> Commit and push changes to your fork (not required if you make changes on GitHub)
 
-<b>Step 6:</b> Make a pull request and wait for approval
+<b>Step 6:</b> Make a pull request (from your fork to main project) and wait for approval
 
 Feel free to submit a new issue if you find a new bug or you have any suggestion for improvement
 

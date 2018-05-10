@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     @Override
     protected void onStart() {
         super.onStart();
-        if(!cityCountryName.equals("")) {
+        if (!cityCountryName.equals("")) {
             mFetchThreadData.queueResponce(0, cityCountryName);
         }
     }
@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 R.layout.dropdown_text,
                 null,
                 new String[]{CITY_COUNTRY_NAME},
-                new int[]{R.id.text},0);
+                new int[]{R.id.text}, 0);
         mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence constraint) {
@@ -136,10 +136,18 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 // Update the parent class's TextView
                 actvCityCountryName.setText(cityCountryName);
                 mFetchThreadData.queueResponce(position, cityCountryName);
+<<<<<<< HEAD
                 InputMethodManager methodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 if (methodManager != null) {
                     methodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
+=======
+//                JSONWeatherTask task = new JSONWeatherTask();
+//                task.execute(new String[]{cityCountryName});
+
+                hideKeyboard();
+
+>>>>>>> master
             }
         });
 
@@ -160,7 +168,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         int i = 0;
 
         ArrayList<ContentValues> cvList = new ArrayList<>();
-        ContentValues cv ;
+        ContentValues cv;
         Gson gson = new GsonBuilder().create();
         IJ ij;
 
@@ -254,7 +262,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         @Override
         public Cursor loadInBackground() {
             return mSQLiteDatabase.query(TABLE_1, mProjection,
-                    CITY_COUNTRY_NAME + " like ?", new String[] {mQuery},
+                    CITY_COUNTRY_NAME + " like ?", new String[]{mQuery},
                     null, null, null, "50");
         }
     }

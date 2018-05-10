@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_auth"
+            android:icon="@drawable/ic_autorenew_black_24dp"
+            android:title="Authenticate" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:title="Profile" />
+        <item
+            android:id="@+id/nav_forecastType"
+            android:icon="@drawable/ic_wb_sunny_black_24dp"
+            android:title="Forecast Type" />
+
+        <item
+            android:id="@+id/nav_credits"
+            android:icon="@drawable/ic_done_black_24dp"
+            android:title="Credits" />
+
+        <item
+            android:id="@+id/nav_notificationOptions"
+            android:icon="@drawable/ic_notifications_black_24dp"
+            android:title="Notification Options" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="Settings" />
+    </group>
+
+    <item android:title="Miscellaneous">
+        <menu>
+            <item
+                android:id="@+id/activity_title_about_us"
+                android:title="About Us" />
+            <item
+                android:id="@+id/activity_title_privacy_policy"
+                android:title="Privacy Policy" />
+            <item
+                android:id="@+id/action_logout"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>

@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.ardovic.weatherappprototype"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -16,25 +16,32 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
+def verSupport = '27.1.1'
+def verConstraintLayout = '1.1.0'
+def verEspresso = '3.0.2'
+def verMockito = '2.7.22'
+def verGson = '2.8.2'
+def verJUnit = '4.12'
+def verTestRunner = '1.0.2'
 def verLombok = '1.16.20'
 def verDagger = '2.14.1'
 def verKnife = '8.8.1'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation "com.android.support:appcompat-v7:$verSupport"
+    implementation "com.android.support:support-v4:$verSupport"
+    implementation "com.android.support:design:$verSupport"
+    implementation "com.android.support.constraint:constraint-layout:$verConstraintLayout"
+    androidTestImplementation "com.android.support.test:runner:$verTestRunner"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$verEspresso"
     implementation "org.projectlombok:lombok:$verLombok"
     annotationProcessor "org.projectlombok:lombok:$verLombok"
     implementation "com.google.dagger:dagger:$verDagger"
@@ -43,11 +50,11 @@ dependencies {
     annotationProcessor "com.jakewharton:butterknife-compiler:$verKnife"
     //implementation 'com.j256.ormlite:ormlite-android:5.0'
     //implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    implementation 'com.google.code.gson:gson:2.8.2'
-    testImplementation 'junit:junit:4.12'
+    implementation "com.google.code.gson:gson:$verGson"
+    testImplementation "junit:junit:$verJUnit"
     // required if you want to use Mockito for unit tests
-    testCompile 'org.mockito:mockito-core:2.7.22'
+    testImplementation "org.mockito:mockito-core:$verMockito"
     // required if you want to use Mockito for Android tests
-    androidTestCompile 'org.mockito:mockito-android:2.7.22'
+    androidTestImplementation "org.mockito:mockito-android:$verMockito"
 
 }

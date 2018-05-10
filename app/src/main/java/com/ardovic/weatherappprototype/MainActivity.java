@@ -136,18 +136,12 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 // Update the parent class's TextView
                 actvCityCountryName.setText(cityCountryName);
                 mFetchThreadData.queueResponce(position, cityCountryName);
-<<<<<<< HEAD
-                InputMethodManager methodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                if (methodManager != null) {
-                    methodManager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-=======
+
 //                JSONWeatherTask task = new JSONWeatherTask();
 //                task.execute(new String[]{cityCountryName});
 
                 hideKeyboard();
 
->>>>>>> master
             }
         });
 

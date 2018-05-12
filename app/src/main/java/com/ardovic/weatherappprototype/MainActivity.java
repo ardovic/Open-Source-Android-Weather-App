@@ -362,6 +362,26 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             }
         });
     }
+
+    /*private void initServerResponse() {
+        mFetchThreadData.setWeatherFetchListener(new FetchThreadData.WeatherFetchListener<Integer>() {
+            @Override
+            public void onDataFetched(Integer o, Weather weather) {
+                if (weather != null) {
+                    ivConditionIcon.setImageBitmap(weather.getIcon());
+                    tvCityCountryName.setText(weather.getLocation().getCity() + ", " + weather.getLocation().getCountry());
+                    tvConditionDescription.setText(weather.getCurrentCondition().getCondition() + " (" + weather.getCurrentCondition().getDescription() + ")");
+                    tvTemperature.setText(", " + Math.round((weather.getTemperature().getTemperature() - 273.15)) + (char) 0x00B0 + "C");
+                    tvHumidity.setText(weather.getCurrentCondition().getHumidity() + "%");
+                    tvPressure.setText(weather.getCurrentCondition().getPressure() + " hPa");
+                    tvWindSpeedDegrees.setText(weather.getWind().getSpeed() + " mps, " + weather.getWind().getDegrees() + (char) 0x00B0);
+                } else {
+                    Toast.makeText(MainActivity.this, "Check internet connection or try again later", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+        });
+    }*/
 }
 
 

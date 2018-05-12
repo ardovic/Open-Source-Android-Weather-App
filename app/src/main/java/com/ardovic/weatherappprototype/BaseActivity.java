@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.ardovic.weatherappprototype.database.DatabaseHelper;
+import com.ardovic.weatherappprototype.network.WeatherApi;
 
 import javax.inject.Inject;
 
@@ -26,6 +27,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     public DatabaseHelper databaseHelper;
     @Inject
     public SQLiteDatabase database;
+    @Inject
+    public WeatherApi weatherApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,5 +1,6 @@
 package com.ardovic.weatherappprototype;
 
+import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,12 +8,13 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
@@ -22,8 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ardovic.weatherappprototype.model.IJ;
-import com.ardovic.weatherappprototype.model.Weather;
-import com.ardovic.weatherappprototype.network.FetchThreadData;
+import com.ardovic.weatherappprototype.model.retrofit.Response;
+import com.ardovic.weatherappprototype.util.ImageHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -35,6 +37,11 @@ import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+
+import static com.ardovic.weatherappprototype.network.WeatherApi.API_KEY;
 
 public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -62,8 +69,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public final static String[] mProjection = {ID, CITY_COUNTRY_NAME};
     private static final String TAG = "MainActivity";
     private static final String CITY_ARGS = "city_weather_arg";
-    FetchThreadData<Integer> mFetchThreadData;
-    private Handler mHandler = new Handler();
+    //FetchThreadData<Integer> mFetchThreadData;
+    //private Handler mHandler = new Handler();
     public String cityCountryName;
 
     public SimpleCursorAdapter mAdapter;
@@ -72,7 +79,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     protected void onStart() {
         super.onStart();
         if (!cityCountryName.equals("")) {
-            mFetchThreadData.queueResponce(0, cityCountryName);
+            requestWeather();
+            //mFetchThreadData.queueResponce(0, cityCountryName);
         }
     }
 
@@ -84,10 +92,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
         actvCityCountryName.setText(cityCountryName);
-        mFetchThreadData = new FetchThreadData<>(mHandler);
-        mFetchThreadData.start();
-        mFetchThreadData.getLooper();
-        initServerResponse();
+        //mFetchThreadData = new FetchThreadData<>(mHandler);
+        //mFetchThreadData.start();
+        //mFetchThreadData.getLooper();
+        //initServerResponse();
 
 
         //JSONConverter.getInstance().makeNewShortJSON(this, null, null, null);
@@ -135,13 +143,14 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
                 // Update the parent class's TextView
                 actvCityCountryName.setText(cityCountryName);
-                mFetchThreadData.queueResponce(position, cityCountryName);
+
+                requestWeather();
+                //mFetchThreadData.queueResponce(position, cityCountryName);
 
 //                JSONWeatherTask task = new JSONWeatherTask();
 //                task.execute(new String[]{cityCountryName});
 
                 hideKeyboard();
-
             }
         });
 
@@ -236,7 +245,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             mAdapter.getCursor().close();
         }
         database.close();
-        mFetchThreadData.clearQueue();
+        //mFetchThreadData.clearQueue();
     }
 
 
@@ -286,22 +295,70 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         }
     }
 
-    private void initServerResponse() {
-        mFetchThreadData.setWeatherFetchListener(new FetchThreadData.WeatherFetchListener<Integer>() {
+    private void requestWeather() {
+        weatherApi.getWeather(cityCountryName, API_KEY).enqueue(new Callback<Response>() {
+            @SuppressLint("SetTextI18n")
             @Override
-            public void onDataFetched(Integer o, Weather weather) {
-                if (weather != null) {
-                    ivConditionIcon.setImageBitmap(weather.getIcon());
-                    tvCityCountryName.setText(weather.getLocation().getCity() + ", " + weather.getLocation().getCountry());
-                    tvConditionDescription.setText(weather.getCurrentCondition().getCondition() + " (" + weather.getCurrentCondition().getDescription() + ")");
-                    tvTemperature.setText(", " + Math.round((weather.getTemperature().getTemperature() - 273.15)) + (char) 0x00B0 + "C");
-                    tvHumidity.setText(weather.getCurrentCondition().getHumidity() + "%");
-                    tvPressure.setText(weather.getCurrentCondition().getPressure() + " hPa");
-                    tvWindSpeedDegrees.setText(weather.getWind().getSpeed() + " mps, " + weather.getWind().getDegrees() + (char) 0x00B0);
-                } else {
-                    Toast.makeText(MainActivity.this, "Check internet connection or try again later", Toast.LENGTH_SHORT)
-                            .show();
+            public void onResponse(@NonNull Call<Response> call, @NonNull retrofit2.Response<Response> response) {
+                Response model = response.body();
+
+                if (model != null) {
+                    Log.d(TAG, model.toString());
+
+                    tvCityCountryName.setText(model.getName() + ", " + model.getSys().getCountry());
+                    tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" +
+                            (model.getWeather().get(0).getDescription() + ")"));
+                    tvTemperature.setText(", " + Math.round((model.getMain().getTemp() - 273.15)) + (char) 0x00B0 + "C");
+                    tvHumidity.setText(model.getMain().getHumidity() + "%");
+                    tvPressure.setText(model.getMain().getPressure() + " hPa");
+                    tvWindSpeedDegrees.setText(model.getWind().getSpeed() + " mps, " + model.getWind().getDeg() + (char) 0x00B0);
+
+                    requestWeatherIcon(model);
                 }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Response> call, @NonNull Throwable t) {
+                Toast.makeText(MainActivity.this, "Check internet connection or try again later", Toast.LENGTH_SHORT)
+                        .show();
+                Log.d(TAG, "Weather request error: " + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * BitmapFactory.decodeStream method needs background thread
+     */
+    private void requestWeatherIcon(Response model) {
+        weatherApi.getIcon(model.getWeather().get(0).getIcon()).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, final @NonNull retrofit2.Response<ResponseBody> response) {
+                if (response.body() != null) {
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            final Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream());
+                            if (bitmap != null) {
+                                final Bitmap resizedBitmap = ImageHelper.getResizedBitmap(bitmap, 100, 100);
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ivConditionIcon.setImageBitmap(resizedBitmap);
+                                    }
+                                });
+                            }
+                        }
+                    }.start();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Toast.makeText(MainActivity.this, "Check internet connection or try again later", Toast.LENGTH_SHORT)
+                        .show();
+                Log.d(TAG, "Weather icon request error: " + t.getMessage());
             }
         });
     }

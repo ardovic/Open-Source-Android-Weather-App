@@ -15,6 +15,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * @deprecated - используется retrofit и {@link com.ardovic.weatherappprototype.util.ImageHelper}
+ */
 public class HTTPWeatherClient {
 
     private static final String BASE_URL = "http://api.openweathermap.org/data/2.5/weather?";

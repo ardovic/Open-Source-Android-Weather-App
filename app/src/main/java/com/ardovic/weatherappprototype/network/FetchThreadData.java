@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by user on 01.04.2018.
+ *
+ * @deprecated - используется retrofit
  */
 
 public class FetchThreadData<T> extends HandlerThread {

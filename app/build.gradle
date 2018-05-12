@@ -56,5 +56,6 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$verMockito"
     // required if you want to use Mockito for Android tests
     androidTestImplementation "org.mockito:mockito-android:$verMockito"
-
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 }

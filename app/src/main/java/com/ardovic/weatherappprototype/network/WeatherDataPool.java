@@ -2,7 +2,6 @@ package com.ardovic.weatherappprototype.network;
 
 import com.ardovic.weatherappprototype.model.Weather;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -11,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by user on 01.04.2018.
+ *
+ * @deprecated - используется retrofit
  */
 
 public class WeatherDataPool extends ThreadPoolExecutor implements FetchThreadData.CallableTasker<Weather> {

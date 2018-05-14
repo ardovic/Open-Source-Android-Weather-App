@@ -10,6 +10,8 @@ import java.util.concurrent.Callable;
 
 /**
  * Created by user on 01.04.2018.
+ *
+ * @deprecated - используется retrofit
  */
 
 public class WeatherTaskPool implements Callable<Weather> {

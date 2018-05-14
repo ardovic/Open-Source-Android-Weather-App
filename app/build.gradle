@@ -33,6 +33,8 @@ def verTestRunner = '1.0.2'
 def verLombok = '1.16.20'
 def verDagger = '2.14.1'
 def verKnife = '8.8.1'
+def verOkHttp = '3.10.0'
+def verRetrofit = '2.4.0'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -49,13 +51,13 @@ dependencies {
     implementation "com.jakewharton:butterknife:$verKnife"
     annotationProcessor "com.jakewharton:butterknife-compiler:$verKnife"
     //implementation 'com.j256.ormlite:ormlite-android:5.0'
-    //implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:$verOkHttp"
     implementation "com.google.code.gson:gson:$verGson"
     testImplementation "junit:junit:$verJUnit"
     // required if you want to use Mockito for unit tests
     testImplementation "org.mockito:mockito-core:$verMockito"
     // required if you want to use Mockito for Android tests
     androidTestImplementation "org.mockito:mockito-android:$verMockito"
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation "com.squareup.retrofit2:retrofit:$verRetrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$verRetrofit"
 }

@@ -9,8 +9,13 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -37,6 +42,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    DrawerLayout drawer;
 
     @BindView(R.id.actv_city_country_name)
     AutoCompleteTextView actvCityCountryName;
@@ -81,6 +88,14 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
         actvCityCountryName.setText(cityCountryName);
@@ -147,6 +162,16 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         actvCityCountryName.setAdapter(mAdapter);
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawer.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

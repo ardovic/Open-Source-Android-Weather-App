@@ -1,85 +1,26 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    tools:context=".MainActivity">
+    tools:context=".NavigationDrawer">
 
-    <AutoCompleteTextView
-        android:id="@+id/actv_city_country_name"
-        android:completionThreshold="3"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/tv_city_country_name"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/actv_city_country_name"
-        android:layout_centerHorizontal="true" />
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <ImageView
-        android:id="@+id/iv_condition_icon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_below="@id/tv_city_country_name"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:scaleType="centerCrop" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:text="@string/app_name"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <TextView
-        android:id="@+id/tv_condition_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/iv_condition_icon" />
+    </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:id="@+id/tv_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/tv_condition_description"
-        android:layout_toRightOf="@id/tv_condition_description" />
+    <include layout="@layout/content_main" />
 
-    <TextView
-        android:id="@+id/pressLab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_condition_description"
-        android:text="Pressure: " />
-
-    <TextView
-        android:id="@+id/tv_pressure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/pressLab"
-        android:layout_toRightOf="@id/pressLab" />
-
-    <TextView
-        android:id="@+id/humLab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/pressLab"
-        android:text="Humidity: " />
-
-    <TextView
-        android:id="@+id/tv_humidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/humLab"
-        android:layout_toRightOf="@id/humLab" />
-
-    <TextView
-        android:id="@+id/windLab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/humLab"
-        android:text="Wind: " />
-
-    <TextView
-        android:id="@+id/tv_wind_speed_degrees"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/windLab"
-        android:layout_toRightOf="@id/windLab" />
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

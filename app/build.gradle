@@ -40,6 +40,7 @@ dependencies {
     implementation "com.android.support:support-v4:$verSupport"
     implementation "com.android.support:design:$verSupport"
     implementation "com.android.support.constraint:constraint-layout:$verConstraintLayout"
+    implementation 'com.android.support:support-v4:27.1.1'
     androidTestImplementation "com.android.support.test:runner:$verTestRunner"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$verEspresso"
     implementation "org.projectlombok:lombok:$verLombok"

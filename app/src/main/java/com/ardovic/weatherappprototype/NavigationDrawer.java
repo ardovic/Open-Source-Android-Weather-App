@@ -1,10 +1,13 @@
 package com.ardovic.weatherappprototype;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +20,8 @@ import android.support.design.widget.NavigationView;
 
 import android.support.v7.app.AppCompatActivity;
 
+import android.widget.Toast;
+
 public class NavigationDrawer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -25,21 +30,26 @@ public class NavigationDrawer extends AppCompatActivity
         super.onCreate(savedInstanceState);
         //Suspect 2
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.drawer_layout);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = findViewById(R.id.drawer_layout);
+        //Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
+        //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //NavigationView navigationView = findViewById(R.id.nav_view);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     public void onBackPressed() {
+        Log.d("start", ">>> Navigation Bar");
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -76,10 +86,19 @@ public class NavigationDrawer extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        //Add
+        Fragment fragment = null;
+        String title = getString(R.string.app_name);
+        //String title = null;
+        //Add
+
         if (id == R.id.nav_auth) {
             // Handle the camera action
-        } else if (id == R.id.nav_credits) {
 
+        } else if (id == R.id.nav_credits) {
+            Log.d("test", ">>> credits");
+            fragment = new CreditFragment();
+            title = "Credits";
         } else if (id == R.id.nav_forecastType) {
 
         } else if (id == R.id.nav_notificationOptions) {
@@ -89,6 +108,19 @@ public class NavigationDrawer extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
 
         }
+
+        //Add
+        if (fragment != null){
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_fragment_layout, fragment);
+            ft.commit();
+        }
+
+        //set the toolbar title
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
+        //Add
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

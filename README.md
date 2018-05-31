@@ -6,6 +6,9 @@ Beginner friendly open source android application. The main mission of this proj
 
 ![Future design of Google Play page](https://github.com/ardovic/Open-Source-Android-Weather-App/blob/master/misc/art/Preview%20on%20Play%20Store.png?raw=true)
 
+> <i>(Note: We don't have an app on Google Play yet, this is just a representative picture for your liking..)</i>
+
+
 If you are looking for an entry-level open source project to contribute to, you came just to the right place! If you never contributed before on GitHub, you might find useful this simple algorithm:
 
 <b>Step 1:</b> Check the "Issues" tab for currently active tasks and pick what suits you best

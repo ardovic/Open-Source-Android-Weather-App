@@ -15,7 +15,7 @@ Just put an x in the [] which are valid.
 
 Please describe the tests that you ran to verify your changes.
 - [ ] `./gradlew assembleDebug assembleRelease`
-- [ ] `./gradlew checkstyle`
+- [ ] `./gradlew build connectedCheck`
 
 # Checklist:
 - [ ] My code follows the style guidelines of this project

@@ -27,6 +27,10 @@ Feel free to submit a new issue if you find a new bug or you have any suggestion
 
 Write your task related questions or comments under that specific tasks issue thread
 
+## Contributing:
+
+If you're new to open-source, we recommend you to checkout our [_Contributing Guidelines_](https://github.com/ardovic/Open-Source-Android-Weather-App/blob/master/CONTRIBUTING.md) and [Setup Guidelines](https://github.com/ardovic/Open-Source-Android-Weather-App/blob/master/SETUP_GUIDELINES.md). Feel free to fork the project and send us a pull request.
+
 ## FAQ:
 
 <i>Q - I found a bug and I can't (or don’t want to) fix it, how can I add it to the issues list?</i>

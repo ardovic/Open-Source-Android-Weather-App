@@ -39,6 +39,7 @@ def verRetrofit = '2.4.0'
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$verSupport"
+    compile 'com.android.support:cardview-v7:27.1.0'
     implementation "com.android.support:support-v4:$verSupport"
     implementation "com.android.support:design:$verSupport"
     implementation "com.android.support.constraint:constraint-layout:$verConstraintLayout"

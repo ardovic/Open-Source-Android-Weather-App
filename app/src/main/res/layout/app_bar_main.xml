@@ -23,6 +23,10 @@
         android:id="@+id/tv_city_country_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:text="Default Location"
         android:layout_below="@id/actv_city_country_name"
         android:layout_centerHorizontal="true" />
 
@@ -35,59 +39,161 @@
         android:layout_margin="10dp"
         android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/tv_condition_description"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/iv_condition_icon" />
+        android:gravity="center"
+        android:id="@+id/ll1"
+        android:layout_below="@id/iv_condition_icon"
+        android:clipToPadding="false"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tv_temperature"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.CardView
+        android:layout_width="160dp"
+        android:id="@+id/cv_condition"
+        android:layout_height="180dp"
+        android:layout_margin="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="35dp"
+            android:textStyle="bold"
+            android:text="36 C" />
+
+        <TextView
+            android:id="@+id/tv_condition_description"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:text="condtion"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_temperature" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="160dp"
+            android:id="@+id/cv_humidity"
+            android:layout_height="180dp"
+            android:layout_margin="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+
+                <TextView
+                    android:id="@+id/tv_humidity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="35dp"
+                    android:text="39%"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Humidity"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    />
+
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/tv_condition_description"
-        android:layout_toRightOf="@id/tv_condition_description" />
+        android:gravity="center"
+        android:id="@+id/ll2"
+        android:layout_below="@id/ll1"
+        android:clipToPadding="false"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/pressLab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_condition_description"
-        android:text="Pressure: " />
 
-    <TextView
-        android:id="@+id/tv_pressure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/pressLab"
-        android:layout_toRightOf="@id/pressLab" />
+        <android.support.v7.widget.CardView
+            android:layout_width="160dp"
+            android:id="@+id/cv_pressure"
+            android:layout_height="180dp"
+            android:layout_margin="10dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
 
-    <TextView
-        android:id="@+id/humLab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/pressLab"
-        android:text="Humidity: " />
+                <TextView
+                    android:id="@+id/tv_pressure"
+                    android:layout_width="wrap_content"
+                    android:text="1005.18 hPa"
+                    android:textStyle="bold"
+                    android:textSize="35dp"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/tv_humidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/humLab"
-        android:layout_toRightOf="@id/humLab" />
+                <TextView
+                    android:id="@+id/pressLab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:layout_below="@id/tv_pressure"
+                    android:text="Pressure" />
 
-    <TextView
-        android:id="@+id/windLab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/humLab"
-        android:text="Wind: " />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_wind_speed_degrees"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/windLab"
-        android:layout_toRightOf="@id/windLab" />
+        </android.support.v7.widget.CardView>
 
+
+        <android.support.v7.widget.CardView
+            android:layout_width="160dp"
+            android:id="@+id/cv_wind"
+            android:layout_height="180dp"
+            android:layout_margin="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tv_wind_speed_degrees"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textSize="35dp"
+                    android:text="2.17 mps 175.5"
+                    />
+                <TextView
+                    android:id="@+id/windLab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20dp"
+                    android:text="Wind" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
 </RelativeLayout>

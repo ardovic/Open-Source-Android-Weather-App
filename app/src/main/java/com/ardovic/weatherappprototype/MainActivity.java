@@ -306,9 +306,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     Log.d(TAG, model.toString());
 
                     tvCityCountryName.setText(model.getName() + ", " + model.getSys().getCountry());
-                    tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" +
-                            (model.getWeather().get(0).getDescription() + ")"));
-                    tvTemperature.setText(", " + Math.round((model.getMain().getTemp() - 273.15)) + (char) 0x00B0 + "C");
+                    tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" +(model.getWeather().get(0).getDescription() + ")"));
+                    tvTemperature.setText("" + Math.round((model.getMain().getTemp() - 273.15)) + (char) 0x00B0 + "C");
                     tvHumidity.setText(model.getMain().getHumidity() + "%");
                     tvPressure.setText(model.getMain().getPressure() + " hPa");
                     tvWindSpeedDegrees.setText(model.getWind().getSpeed() + " mps, " + model.getWind().getDeg() + (char) 0x00B0);

@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.ardovic.weatherappprototype"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -16,50 +16,33 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '27.0.3'
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
-def verSupport = '27.1.1'
-def verConstraintLayout = '1.1.0'
-def verEspresso = '3.0.2'
-def verMockito = '2.7.22'
-def verGson = '2.8.2'
-def verJUnit = '4.12'
-def verTestRunner = '1.0.2'
-def verLombok = '1.16.20'
-def verDagger = '2.14.1'
-def verKnife = '8.8.1'
-def verOkHttp = '3.10.0'
-def verRetrofit = '2.4.0'
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "com.android.support:appcompat-v7:$verSupport"
-    compile 'com.android.support:cardview-v7:27.1.0'
-    implementation "com.android.support:support-v4:$verSupport"
-    implementation "com.android.support:design:$verSupport"
-    implementation "com.android.support.constraint:constraint-layout:$verConstraintLayout"
-    implementation 'com.android.support:support-v4:27.1.1'
-    androidTestImplementation "com.android.support.test:runner:$verTestRunner"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$verEspresso"
-    implementation "org.projectlombok:lombok:$verLombok"
-    annotationProcessor "org.projectlombok:lombok:$verLombok"
-    implementation "com.google.dagger:dagger:$verDagger"
-    annotationProcessor "com.google.dagger:dagger-compiler:$verDagger"
-    implementation "com.jakewharton:butterknife:$verKnife"
-    annotationProcessor "com.jakewharton:butterknife-compiler:$verKnife"
-    //implementation 'com.j256.ormlite:ormlite-android:5.0'
-    implementation "com.squareup.okhttp3:logging-interceptor:$verOkHttp"
-    implementation "com.google.code.gson:gson:$verGson"
-    testImplementation "junit:junit:$verJUnit"
-    // required if you want to use Mockito for unit tests
-    testImplementation "org.mockito:mockito-core:$verMockito"
-    // required if you want to use Mockito for Android tests
-    androidTestImplementation "org.mockito:mockito-android:$verMockito"
-    implementation "com.squareup.retrofit2:retrofit:$verRetrofit"
-    implementation "com.squareup.retrofit2:converter-gson:$verRetrofit"
+    
+    implementation "androidx.appcompat:appcompat:1.1.0-alpha04"
+    implementation "androidx.legacy:legacy-support-v4:1.0.0"
+    implementation "com.google.android.material:material:1.1.0-alpha05"
+    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    implementation "com.google.dagger:dagger:2.14.1"
+    implementation "com.jakewharton:butterknife:10.1.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
+    implementation "com.google.code.gson:gson:2.8.5"
+    implementation "com.squareup.retrofit2:retrofit:2.4.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.mockito:mockito-core:2.24.5"
+
+    androidTestImplementation "androidx.test:runner:1.2.0-alpha03"
+    androidTestImplementation "org.mockito:mockito-android:2.7.22"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0-alpha03"
+
+    annotationProcessor "com.google.dagger:dagger-compiler:2.14.1"
+    annotationProcessor "com.jakewharton:butterknife-compiler:10.1.0"
 }

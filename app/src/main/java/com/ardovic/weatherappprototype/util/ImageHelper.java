@@ -2,7 +2,7 @@ package com.ardovic.weatherappprototype.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * @author Polurival on 12.05.2018.

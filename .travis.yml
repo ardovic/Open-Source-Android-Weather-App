@@ -1,24 +1,30 @@
 language: android
+jdk: oraclejdk8
+
 android:
   components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
-    # - tools
-    # - platform-tools
+  - platform-tools
+  - tools
+  - android-28
+  - build-tools-28.0.3
+  - extra-android-m2repository
 
-    # The BuildTools version used by your project
-    - build-tools-27.0.3
+  licenses:
+  - 'android-sdk-preview-license-52d11cd2'
+  - 'android-sdk-license-.+'
+  - 'google-gdk-license-.+'
 
-    # The SDK version used to compile your project
-    - android-27
+branches:
+  only:
+  - master
 
-    # Additional components
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - addon-google_apis-google-26
+install:
+- chmod +x ./gradlew
 
-    # Specify at least one system image,
-    # if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-26
-    - sys-img-armeabi-v7a-android-17
+script: ./gradlew clean assembleDebug
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+

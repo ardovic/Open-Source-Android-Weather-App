@@ -48,7 +48,7 @@
         android:clipToPadding="false"
         android:orientation="horizontal">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="160dp"
         android:id="@+id/cv_condition"
         android:layout_height="180dp"
@@ -80,9 +80,9 @@
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="160dp"
             android:id="@+id/cv_humidity"
             android:layout_height="180dp"
@@ -114,7 +114,7 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
 
     </LinearLayout>
@@ -128,7 +128,7 @@
         android:orientation="horizontal">
 
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="160dp"
             android:id="@+id/cv_pressure"
             android:layout_height="180dp"
@@ -160,10 +160,10 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="160dp"
             android:id="@+id/cv_wind"
             android:layout_height="180dp"
@@ -195,7 +195,7 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 </RelativeLayout>

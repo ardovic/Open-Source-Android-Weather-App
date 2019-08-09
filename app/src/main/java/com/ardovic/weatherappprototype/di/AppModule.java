@@ -4,53 +4,50 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.ardovic.weatherappprototype.App;
 import com.ardovic.weatherappprototype.database.DatabaseHelper;
-
-import javax.inject.Singleton;
-
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 
+import javax.inject.Singleton;
+
 @Module
-public class AppModule {
+public abstract class AppModule { //Module must be made abstract since it has a abstract method now
 
     private final static String PREFS = "PREFS";
-    private final App app;
 
-    public AppModule(App app) {
-        this.app = app;
-    }
+    //Removed the AppModule constructor since no need to initialize Context now, Dagger will provide it
+
+    @Binds //Binds the App instance to Context (superType)
+    @Singleton
+    abstract Context providesAppContext(App app);//this method should be abstract, Dagger can provide Context
+
+
+    //Since module cannot have abstract and non-static method together, turn all other method static
 
     @Provides
     @Singleton
-    Context providesAppContext(){
-        return app;
-    }
-
-    @Provides
-    @Singleton
-    SharedPreferences providesSharedPreferences(Context context) {
+    static SharedPreferences providesSharedPreferences(Context context) {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
     @Provides
     @Singleton
-    Resources providesResources(Context context) {
+    static Resources providesResources(Context context) {
         return context.getResources();
     }
 
 
     @Provides
     @Singleton
-    DatabaseHelper providesDatabaseHelper(Context context) {
+    static DatabaseHelper providesDatabaseHelper(Context context) {
         return new DatabaseHelper(context);
     }
 
     @Provides
     @Singleton
-    SQLiteDatabase providesDatabase(DatabaseHelper databaseHelper) {
+    static SQLiteDatabase providesDatabase(DatabaseHelper databaseHelper) {
         return databaseHelper.getReadableDatabase();
     }
 

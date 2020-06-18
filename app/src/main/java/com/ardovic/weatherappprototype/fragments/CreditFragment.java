@@ -1,12 +1,15 @@
-package com.ardovic.weatherappprototype;
+package com.ardovic.weatherappprototype.fragments;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+
+import com.ardovic.weatherappprototype.R;
 
 
 /**
@@ -31,6 +34,11 @@ public class CreditFragment extends Fragment {
 
     public CreditFragment() {
         // Required empty public constructor
+    }
+
+    public static CreditFragment newInstance() {
+        return new CreditFragment();
+
     }
 
     /**

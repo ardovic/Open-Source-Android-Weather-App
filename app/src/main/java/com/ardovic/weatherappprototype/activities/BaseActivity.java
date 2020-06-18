@@ -1,4 +1,4 @@
-package com.ardovic.weatherappprototype;
+package com.ardovic.weatherappprototype.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.ardovic.weatherappprototype.App;
 import com.ardovic.weatherappprototype.database.DatabaseHelper;
 import com.ardovic.weatherappprototype.network.WeatherApi;
 

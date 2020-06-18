@@ -1,4 +1,4 @@
-package com.ardovic.weatherappprototype;
+package com.ardovic.weatherappprototype.activities;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
@@ -10,22 +10,35 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
-import android.widget.FilterQueryProvider;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.ardovic.weatherappprototype.R;
+import com.ardovic.weatherappprototype.database.DatabaseHelper;
+import com.ardovic.weatherappprototype.fragments.CreditFragment;
 import com.ardovic.weatherappprototype.model.IJ;
 import com.ardovic.weatherappprototype.model.retrofit.Response;
 import com.ardovic.weatherappprototype.util.ImageHelper;
+import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -34,6 +47,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +58,18 @@ import retrofit2.Callback;
 
 import static com.ardovic.weatherappprototype.network.WeatherApi.API_KEY;
 
-public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+        NavigationView.OnNavigationItemSelectedListener,
+        CreditFragment.OnFragmentInteractionListener {
+
+    // Tags
+    private final String CREDIT_FRAGMENT = "CreditFragment";
+
+    // Attributes
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     @BindView(R.id.actv_city_country_name)
     AutoCompleteTextView actvCityCountryName;
@@ -62,6 +88,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     @BindView(R.id.tv_wind_speed_degrees)
     TextView tvWindSpeedDegrees;
 
+    // Attributes and Tags
     public final static String CITY_ID = "city_id";
     public final static String CITY_COUNTRY_NAME = "city_country_name";
     public final static String TABLE_1 = "my_table";
@@ -69,10 +96,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public final static String[] mProjection = {ID, CITY_COUNTRY_NAME};
     private static final String TAG = "MainActivity";
     private static final String CITY_ARGS = "city_weather_arg";
-    //FetchThreadData<Integer> mFetchThreadData;
-    //private Handler mHandler = new Handler();
     public String cityCountryName;
-
     public SimpleCursorAdapter mAdapter;
 
     @Override
@@ -80,7 +104,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         super.onStart();
         if (!cityCountryName.equals("")) {
             requestWeather();
-            //mFetchThreadData.queueResponce(0, cityCountryName);
         }
     }
 
@@ -90,15 +113,27 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // Initializations
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar_main);
+
+        // Sets the Toolbar to act as the ActionBar for this Activity
+        setSupportActionBar(toolbar);
+
+        // Disable title (There is a textView instead of title, so we can skip the title)
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white);
+        }
+
+
         cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
         actvCityCountryName.setText(cityCountryName);
-        //mFetchThreadData = new FetchThreadData<>(mHandler);
-        //mFetchThreadData.start();
-        //mFetchThreadData.getLooper();
-        //initServerResponse();
 
-
-        //JSONConverter.getInstance().makeNewShortJSON(this, null, null, null);
 
         if (database.isOpen()) {
             checkDatabaseState();
@@ -107,56 +142,48 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             checkDatabaseState();
         }
 
-
         // Create a SimpleCursorAdapter for the State Name field.
         mAdapter = new SimpleCursorAdapter(this,
                 R.layout.dropdown_text,
                 null,
                 new String[]{CITY_COUNTRY_NAME},
                 new int[]{R.id.text}, 0);
-        mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            @Override
-            public Cursor runQuery(CharSequence constraint) {
-                if (constraint != null) {
-                    if (constraint.length() >= 3 && !TextUtils.isEmpty(constraint)) {
-                        Bundle bundle = new Bundle();
-                        String query = charArrayUpperCaser(constraint);
-                        bundle.putString(CITY_ARGS, query);
-                        getLoaderManager().restartLoader(0, bundle, MainActivity.this).forceLoad();
-                    }
+        mAdapter.setFilterQueryProvider(constraint -> {
+            if (constraint != null) {
+                if (constraint.length() >= 3 && !TextUtils.isEmpty(constraint)) {
+                    Bundle bundle = new Bundle();
+                    String query = charArrayUpperCaser(constraint);
+                    bundle.putString(CITY_ARGS, query);
+                    getLoaderManager().restartLoader(0, bundle, MainActivity.this).forceLoad();
                 }
-                return null;
             }
+            return null;
         });
 
         // Set an OnItemClickListener, to update dependent fields when
         // a choice is made in the AutoCompleteTextView.
-        actvCityCountryName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> listView, View view,
-                                    int position, long id) {
-                // Get the cursor, positioned to the corresponding row in the
-                // result set
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+        actvCityCountryName.setOnItemClickListener((listView, view, position, id) -> {
+            // Get the cursor, positioned to the corresponding row in the
+            // result set
+            Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
-                // Get the state's capital from this row in the database.
-                cityCountryName = cursor.getString(cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME));
+            // Get the state's capital from this row in the database.
+            cityCountryName = cursor.getString(cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME));
 
-                // Update the parent class's TextView
-                actvCityCountryName.setText(cityCountryName);
+            // Update the parent class's TextView
+            actvCityCountryName.setText(cityCountryName);
 
-                requestWeather();
-                //mFetchThreadData.queueResponce(position, cityCountryName);
-
-//                JSONWeatherTask task = new JSONWeatherTask();
-//                task.execute(new String[]{cityCountryName});
-
-                hideKeyboard();
-            }
+            requestWeather();
+            hideKeyboard();
         });
 
         actvCityCountryName.setAdapter(mAdapter);
 
+        actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
+        // Activate navigation drawer's listener
+        activateDrawerListener();
     }
 
     @Override
@@ -245,7 +272,90 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             mAdapter.getCursor().close();
         }
         database.close();
-        //mFetchThreadData.clearQueue();
+    }
+
+    private void activateDrawerListener() {
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("start", ">>> Navigation Bar");
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        @SuppressLint("ShowToast") Toast toast_not_implemented_yet = Toast.makeText(this, R.string.notImplementedYetToast, Toast.LENGTH_SHORT);
+
+        // Handle navigation view item clicks here.
+        switch (item.getItemId()) {
+            case R.id.nav_credits:
+                Log.d("test", ">>> credits");
+                drawerLayout.closeDrawers();
+                openCreditFragment();
+                return true;
+            case R.id.nav_profile:
+            case R.id.nav_auth: // Handle the camera action
+            case R.id.nav_forecastType:
+            case R.id.nav_notificationOptions:
+            case R.id.nav_settings:
+            case R.id.activity_title_about_us:
+            case R.id.activity_title_privacy_policy:
+            case R.id.ic_share:
+            case R.id.action_logout:
+                toast_not_implemented_yet.show();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void openCreditFragment() {
+        // If there is at least one fragment already created.
+        if (getSupportFragmentManager().getFragments().size() > 0) {
+            /*Check if the CreditFragment already exists (on the top of the current backstack)
+        (and if it's the current fragment on the screen, so we don't do anything)*/
+            if (isLastFragmentInBackStack(CREDIT_FRAGMENT)) return;
+        }
+
+
+        CreditFragment creditFragment = (CreditFragment) getSupportFragmentManager().findFragmentByTag(CREDIT_FRAGMENT);
+        FrameLayout frameLayout = findViewById(R.id.blankFrameLayoutForFragments);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        /*this fragment isn't present on the backstack*/
+        if (creditFragment == null)
+            fragmentTransaction.replace(frameLayout.getId(), CreditFragment.newInstance(), CREDIT_FRAGMENT).addToBackStack(CREDIT_FRAGMENT);
+
+            /* put back the old fragment on the top of the backstack*/
+        else
+            fragmentTransaction.replace(frameLayout.getId(), creditFragment, CREDIT_FRAGMENT);
+        fragmentTransaction.commit();
+    }
+
+    /* Check if the fragment corresponding to fragmentTag is on the top of the current backstack */
+    private boolean isLastFragmentInBackStack(String fragmentTag) {
+        List<Fragment> lf = getSupportFragmentManager().getFragments();
+        return getSupportFragmentManager().findFragmentByTag(fragmentTag) == lf.get(lf.size() - 1);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Toast.makeText(this, "onCreditFragmentInteraction \n (In MainActivityUri) : \n" + uri.toString(), Toast.LENGTH_LONG).show();
     }
 
 
@@ -271,14 +381,14 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     }
 
     private String charArrayUpperCaser(CharSequence sequence) {
-        Character charAt = sequence.charAt(0);
-        String s = sequence.toString().replace(sequence.charAt(0), charAt.toString().toUpperCase().charAt(0));
+        char charAt = sequence.charAt(0);
+        String s = sequence.toString().replace(sequence.charAt(0), Character.toString(charAt).toUpperCase().charAt(0));
         Log.d(TAG, "charArrayUpperCaser: " + s);
         return s;
     }
 
     private void checkDatabaseState() {
-        if (databaseHelper.isTableExists(database, TABLE_1)) {
+        if (DatabaseHelper.isTableExists(database, TABLE_1)) {
             long count = DatabaseUtils.queryNumEntries(database, TABLE_1);
             System.out.println(count);
             Log.d(TAG, "checkDatabaseState: start checking database");
@@ -306,7 +416,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     Log.d(TAG, model.toString());
 
                     tvCityCountryName.setText(model.getName() + ", " + model.getSys().getCountry());
-                    tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" +(model.getWeather().get(0).getDescription() + ")"));
+                    tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" + (model.getWeather().get(0).getDescription() + ")"));
                     tvTemperature.setText("" + Math.round((model.getMain().getTemp() - 273.15)) + (char) 0x00B0 + "C");
                     tvHumidity.setText(model.getMain().getHumidity() + "%");
                     tvPressure.setText(model.getMain().getPressure() + " hPa");
@@ -341,12 +451,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                             if (bitmap != null) {
                                 final Bitmap resizedBitmap = ImageHelper.getResizedBitmap(bitmap, 100, 100);
 
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ivConditionIcon.setImageBitmap(resizedBitmap);
-                                    }
-                                });
+                                runOnUiThread(() -> ivConditionIcon.setImageBitmap(resizedBitmap));
                             }
                         }
                     }.start();
@@ -361,26 +466,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             }
         });
     }
-
-    /*private void initServerResponse() {
-        mFetchThreadData.setWeatherFetchListener(new FetchThreadData.WeatherFetchListener<Integer>() {
-            @Override
-            public void onDataFetched(Integer o, Weather weather) {
-                if (weather != null) {
-                    ivConditionIcon.setImageBitmap(weather.getIcon());
-                    tvCityCountryName.setText(weather.getLocation().getCity() + ", " + weather.getLocation().getCountry());
-                    tvConditionDescription.setText(weather.getCurrentCondition().getCondition() + " (" + weather.getCurrentCondition().getDescription() + ")");
-                    tvTemperature.setText(", " + Math.round((weather.getTemperature().getTemperature() - 273.15)) + (char) 0x00B0 + "C");
-                    tvHumidity.setText(weather.getCurrentCondition().getHumidity() + "%");
-                    tvPressure.setText(weather.getCurrentCondition().getPressure() + " hPa");
-                    tvWindSpeedDegrees.setText(weather.getWind().getSpeed() + " mps, " + weather.getWind().getDegrees() + (char) 0x00B0);
-                } else {
-                    Toast.makeText(MainActivity.this, "Check internet connection or try again later", Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
-        });
-    }*/
 }
 
 

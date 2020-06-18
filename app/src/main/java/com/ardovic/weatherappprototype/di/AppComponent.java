@@ -1,7 +1,7 @@
 package com.ardovic.weatherappprototype.di;
 
 import com.ardovic.weatherappprototype.App;
-import com.ardovic.weatherappprototype.BaseActivity;
+import com.ardovic.weatherappprototype.activities.BaseActivity;
 import dagger.BindsInstance;
 import dagger.Component;
 

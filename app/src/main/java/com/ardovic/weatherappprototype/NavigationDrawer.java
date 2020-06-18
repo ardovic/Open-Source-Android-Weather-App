@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
 import android.view.Menu;
@@ -13,6 +12,7 @@ import android.view.MenuItem;
 
 import android.os.Bundle;
 
+import com.ardovic.weatherappprototype.fragments.CreditFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;

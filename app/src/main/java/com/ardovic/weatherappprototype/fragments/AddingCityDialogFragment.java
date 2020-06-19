@@ -1,4 +1,4 @@
-package com.ardovic.weatherappprototype;
+package com.ardovic.weatherappprototype.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.ardovic.weatherappprototype.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

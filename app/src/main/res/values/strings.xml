@@ -6,7 +6,35 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="share">Share</string>
+    <string name="notImplementedYetToast">Not implemented yet :/</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Hello ! This is where the fragments will be placed.
+    Occupies the entire screen (except the Toolbar).
+        Click on the back button to stack the fragment and show the user the layout of the main activity
+    </string>
+
+    <!-- Navigation header -->
+    <string name="username"><![CDATA[<Username>]]></string>
+    <string name="adminOrMember">Admin/Member</string>
+
+    <!-- Navigation drawer items -->
+    <string name="general">General</string>
+    <string name="profile">Profile</string>
+    <string name="authenticate">Authenticate</string>
+    <string name="forecast_type">Forecast Type</string>
+    <string name="credits">Credits</string>
+    <string name="notification_options">Notification Options</string>
+    <string name="settings">Settings</string>
+    <string name="miscellaneous">Miscellaneous</string>
+    <string name="about_us">About Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="disconnection">Disconnection</string>
+    <string name="logout">Logout</string>
+    <string name="default_location">Default Location</string>
+    <string name="condtion">condtion</string>
+    <string name="humidity">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="wind">Wind</string>
 </resources>

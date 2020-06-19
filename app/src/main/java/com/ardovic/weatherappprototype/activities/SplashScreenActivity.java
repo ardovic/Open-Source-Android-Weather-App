@@ -1,15 +1,13 @@
-package com.ardovic.weatherappprototype;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.ardovic.weatherappprototype.activities;
 
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.ardovic.weatherappprototype.R;
 import com.ardovic.weatherappprototype.model.IJ;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,47 +17,44 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class SplashScreen extends BaseActivity {
-    public static final String PACKAGE_NAME ="com.ardovic.weatherappprototype";
+public class SplashScreenActivity extends BaseActivity {
+    public static final String PACKAGE_NAME = "com.ardovic.weatherappprototype";
     public final static String CITY_ID = "city_id";
     public final static String CITY_COUNTRY_NAME = "city_country_name";
     public final static String TABLE_1 = "my_table";
     public static boolean IF_TABLE_EXITS = false;
-    private static final String TAG = "SplashScreen";
-    public static final String TABLE ="table";
+    private static final String TAG = "SplashScreenActivity";
+    public static final String TABLE = "table";
     ImageView imageView;
-
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IF_TABLE_EXITS = sharedPreferences.getBoolean(TABLE,false);
+        IF_TABLE_EXITS = sharedPreferences.getBoolean(TABLE, false);
         setContentView(R.layout.activity_splash_screen);
-        getSupportActionBar().hide();
         imageView = findViewById(R.id.splash_screen);
         imageView.setVisibility(View.INVISIBLE);
-        getSupportActionBar().hide();
 
 
-        if (IF_TABLE_EXITS){
+        if (IF_TABLE_EXITS) {
             Log.d(TAG, "onCreate: data base exists");
-            Intent intent = new Intent(SplashScreen.this,MainActivity.class);
+            Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        }else {
+        } else {
             imageView.setVisibility(View.VISIBLE);
             Log.d(TAG, "onCreate: data base doesn't exits");
             createLocalCityDB();
             sharedPreferences.edit().putBoolean(TABLE, true).apply();
-            Intent intent = new Intent(SplashScreen.this,MainActivity.class);
+            Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
 
 
     }
+
     public void createLocalCityDB() {
 
         int i = 0;

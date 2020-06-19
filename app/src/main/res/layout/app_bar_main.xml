@@ -2,33 +2,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="20dp"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <AutoCompleteTextView
         android:id="@+id/actv_city_country_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:completionThreshold="3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-<!-- add-->
-    <!--<android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/AppTheme.PopupOverlay" /> -->
-    <!-- add-->
+        tools:ignore="LabelFor" />
+
     <TextView
         android:id="@+id/tv_city_country_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:textStyle="bold"
-        android:textSize="30dp"
-        android:text="Default Location"
         android:layout_below="@id/actv_city_country_name"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="@string/default_location"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/iv_condition_icon"
@@ -40,76 +33,75 @@
         android:scaleType="centerCrop" />
 
     <LinearLayout
+        android:id="@+id/ll1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:id="@+id/ll1"
         android:layout_below="@id/iv_condition_icon"
         android:clipToPadding="false"
+        android:gravity="center"
         android:orientation="horizontal">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="160dp"
-        android:id="@+id/cv_condition"
-        android:layout_height="180dp"
-        android:layout_margin="10dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center">
-
-        <TextView
-            android:id="@+id/tv_temperature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="35dp"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="36 C" />
-
-        <TextView
-            android:id="@+id/tv_condition_description"
-            android:layout_width="wrap_content"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:text="condtion"
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_temperature" />
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
         <androidx.cardview.widget.CardView
+            android:id="@+id/cv_condition"
             android:layout_width="160dp"
-            android:id="@+id/cv_humidity"
             android:layout_height="180dp"
             android:layout_margin="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="36 C"
+                    android:textSize="35sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_condition_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/condtion"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_humidity"
+            android:layout_width="160dp"
+            android:layout_height="180dp"
+            android:layout_margin="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
 
 
                 <TextView
                     android:id="@+id/tv_humidity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="35dp"
-                    android:text="39%"/>
+                    android:text="39%"
+                    android:textSize="35sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Humidity"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    />
+                    android:text="@string/humidity"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
 
             </LinearLayout>
@@ -118,45 +110,46 @@
 
 
     </LinearLayout>
+
     <LinearLayout
+        android:id="@+id/ll2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:id="@+id/ll2"
         android:layout_below="@id/ll1"
         android:clipToPadding="false"
+        android:gravity="center"
         android:orientation="horizontal">
 
 
         <androidx.cardview.widget.CardView
-            android:layout_width="160dp"
             android:id="@+id/cv_pressure"
+            android:layout_width="160dp"
             android:layout_height="180dp"
             android:layout_margin="10dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv_pressure"
                     android:layout_width="wrap_content"
-                    android:text="1005.18 hPa"
-                    android:textStyle="bold"
-                    android:textSize="35dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:layout_height="wrap_content"/>
+                    android:text="1005.18 hPa"
+                    android:textSize="35sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/pressLab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:layout_below="@id/tv_pressure"
-                    android:text="Pressure" />
+                    android:text="@string/pressure"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -164,34 +157,34 @@
 
 
         <androidx.cardview.widget.CardView
-            android:layout_width="160dp"
             android:id="@+id/cv_wind"
+            android:layout_width="160dp"
             android:layout_height="180dp"
             android:layout_margin="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv_wind_speed_degrees"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
                     android:gravity="center"
-                    android:textSize="35dp"
                     android:text="2.17 mps 175.5"
-                    />
+                    android:textSize="35sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/windLab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
                     android:layout_marginTop="10dp"
-                    android:textSize="20dp"
-                    android:text="Wind" />
+                    android:text="@string/wind"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

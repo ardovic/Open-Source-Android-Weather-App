@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:completionThreshold="3"
+        android:hint="Enter the location"
         tools:ignore="LabelFor" />
 
     <TextView
@@ -58,7 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="36 C"
+                    android:text="--"
                     android:textSize="35sp"
                     android:textStyle="bold" />
 
@@ -92,8 +93,8 @@
                     android:id="@+id/tv_humidity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="39%"
                     android:textSize="35sp"
+                    android:text="--"
                     android:textStyle="bold" />
 
                 <TextView
@@ -138,7 +139,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="1005.18 hPa"
+                    android:text="--"
                     android:textSize="35sp"
                     android:textStyle="bold" />
 
@@ -173,7 +174,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="2.17 mps 175.5"
+                    android:text="--"
                     android:textSize="35sp"
                     android:textStyle="bold" />
 

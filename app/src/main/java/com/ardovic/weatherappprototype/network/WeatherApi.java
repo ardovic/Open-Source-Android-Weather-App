@@ -16,7 +16,7 @@ public interface WeatherApi {
 
     String API_KEY = "1780541fd97c219bcb6b471152ad65c7";
 
-    String BASE_URL = "http://api.openweathermap.org";
+    String BASE_URL = "https://api.openweathermap.org";
 
     String WEATHER_PATH = "/data/2.5/weather";
     String IMAGE_PATH = BASE_URL + "/img/w/{iconId}.png";

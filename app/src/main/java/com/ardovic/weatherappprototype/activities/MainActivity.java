@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -309,17 +310,35 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 openCreditFragment();
                 return true;
             case R.id.nav_profile:
+                toast_not_implemented_yet.show();
+                return true;
             case R.id.nav_auth: // Handle the camera action
+                toast_not_implemented_yet.show();
+                return true;
             case R.id.nav_forecastType:
+                toast_not_implemented_yet.show();
+                return true;
             case R.id.nav_notificationOptions:
+                toast_not_implemented_yet.show();
+                return true;
             case R.id.nav_settings:
+                toast_not_implemented_yet.show();
+                return true;
             case R.id.activity_title_about_us:
+                Intent intent=new Intent(getApplicationContext(),AboutUs.class);
+                startActivity(intent);
+                return true;
             case R.id.activity_title_privacy_policy:
+                toast_not_implemented_yet.show();
+                return true;
             case R.id.ic_share:
+                toast_not_implemented_yet.show();
+                return true;
             case R.id.action_logout:
                 toast_not_implemented_yet.show();
                 return true;
             default:
+                toast_not_implemented_yet.show();
                 return false;
         }
     }

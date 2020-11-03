@@ -22,11 +22,18 @@ public interface WeatherApi {
     String IMAGE_PATH = BASE_URL + "/img/w/{iconId}.png";
 
     String PARAM_LOCATION = "q";
+    String PARAM_LAT = "lat";
+    String PARAM_LON = "lon";
     String PARAM_APP_ID = "APPID";
 
     @GET(WEATHER_PATH)
     Call<Response> getWeather(@Query(PARAM_LOCATION) String location,
                               @Query(PARAM_APP_ID) String apiKey);
+
+    @GET(WEATHER_PATH)
+    Call<Response> getWeatherUsingCoordinates(@Query(PARAM_LAT) String lat,
+                                              @Query(PARAM_LON) String lon,
+                                              @Query(PARAM_APP_ID) String apiKey);
 
     @GET(IMAGE_PATH)
     @Streaming

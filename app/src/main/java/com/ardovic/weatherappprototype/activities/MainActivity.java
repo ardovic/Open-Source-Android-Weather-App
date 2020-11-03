@@ -109,6 +109,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public String lat;
     public String lon;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public boolean manualSearchFlag = false;
 
     @Override
     protected void onStart() {
@@ -192,6 +193,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
             // Update the parent class's TextView
             actvCityCountryName.setText(cityCountryName);
+
+            manualSearchFlag = true;
 
             requestWeather();
             hideKeyboard();
@@ -571,27 +574,24 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         @Override
         public void onReceive(Context context, Intent intent) {
             int result = intent.getIntExtra("result",0);
-            // if it get result 0 that means location access is not given by user. if 2 then location is off in device, otherwise we got the coordinates from service.
-            if(result==0)
-            {
-                cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
-                actvCityCountryName.setText(cityCountryName);
-                tvCityCountryName.setText(" ");
-                requestWeather();
-                Toast.makeText(getApplicationContext(),"location permission is not given \nDisplaying last searched location",Toast.LENGTH_SHORT).show();
-            }
-            else if(result==1){
-                // Displaying coordinates to user
-                lat = String.valueOf(intent.getDoubleExtra("lat",0.0));
-                lon = String.valueOf(intent.getDoubleExtra("longi",0.0));
-                requestWeatherUsingCoordinates();
-                Log.v("checkService","Inside broadcast receiver");
+            if(!manualSearchFlag) {
+                // if it get result 0 that means location access is not given by user. if 2 then location is off in device, otherwise we got the coordinates from service.
+                if (result == 0) {
+                    cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
+                    actvCityCountryName.setText(cityCountryName);
+                    tvCityCountryName.setText(" ");
+                    requestWeather();
+                    Toast.makeText(getApplicationContext(), "location permission is not given \nDisplaying last searched location", Toast.LENGTH_SHORT).show();
+                } else if (result == 1) {
+                    // Displaying coordinates to user
+                    lat = String.valueOf(intent.getDoubleExtra("lat", 0.0));
+                    lon = String.valueOf(intent.getDoubleExtra("longi", 0.0));
+                    requestWeatherUsingCoordinates();
 
-            }
-            else
-            {
-                tvCityCountryName.setText(" ");
-                Toast.makeText(getApplicationContext(),"location is off in your device \nEnter the place manually",Toast.LENGTH_SHORT).show();
+                } else {
+                    tvCityCountryName.setText(" ");
+                    Toast.makeText(getApplicationContext(), "location is off in your device \nEnter the place manually", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     };

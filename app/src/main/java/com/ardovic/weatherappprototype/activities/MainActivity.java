@@ -216,7 +216,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             // If user granted request then start location service to get geographic coordinates else displays last searched locations weather details
             if(grantResults[0]==PackageManager.PERMISSION_GRANTED)
             {
-                Log.v("permission","Inside if");
+                tvCityCountryName.setText("Getting location");
                 Intent intent = new Intent(MainActivity.this,LocationService.class);
                 startService(intent);
             }
@@ -224,6 +224,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             {
                 cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
                 actvCityCountryName.setText(cityCountryName);
+                Toast.makeText(getApplicationContext(),"location permission is not given \nDisplaying last searched location",Toast.LENGTH_SHORT).show();
                 requestWeather();
             }
         }
@@ -577,7 +578,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 actvCityCountryName.setText(cityCountryName);
                 tvCityCountryName.setText(" ");
                 requestWeather();
-                Toast.makeText(getApplicationContext(),"location permission is not given \n Displaying last searched location",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"location permission is not given \nDisplaying last searched location",Toast.LENGTH_SHORT).show();
             }
             else if(result==1){
                 // Displaying coordinates to user
@@ -589,11 +590,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             }
             else
             {
-                cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
-                actvCityCountryName.setText(cityCountryName);
                 tvCityCountryName.setText(" ");
-                requestWeather();
-                Toast.makeText(getApplicationContext(),"location is off in your device \n Displaying last searched location",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"location is off in your device \nEnter the place manually",Toast.LENGTH_SHORT).show();
             }
         }
     };

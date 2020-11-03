@@ -73,6 +73,7 @@ public class LocationService extends Service {
                     Intent intent = new Intent(ACTION);
                     intent.putExtra("result",0);
                     mLocalBroadcastManager.sendBroadcast(intent);
+                    stopSelf();
                 }
                 else {
                     // requesting for location updates(coordinates) using callback function
@@ -89,6 +90,7 @@ public class LocationService extends Service {
                         Intent intent = new Intent(ACTION);
                         intent.putExtra("result",2);
                         mLocalBroadcastManager.sendBroadcast(intent);
+                        stopSelf();
                     }
                 }
             }

@@ -1,11 +1,15 @@
 package com.ardovic.weatherappprototype.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,10 +32,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.ardovic.weatherappprototype.R;
 import com.ardovic.weatherappprototype.database.DatabaseHelper;
@@ -39,6 +45,7 @@ import com.ardovic.weatherappprototype.fragments.CreditFragment;
 import com.ardovic.weatherappprototype.model.IJ;
 import com.ardovic.weatherappprototype.model.retrofit.Response;
 import com.ardovic.weatherappprototype.util.ImageHelper;
+import com.ardovic.weatherappprototype.services.LocationService;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -97,8 +104,12 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public final static String[] mProjection = {ID, CITY_COUNTRY_NAME};
     private static final String TAG = "MainActivity";
     private static final String CITY_ARGS = "city_weather_arg";
-    public String cityCountryName;
+    public String cityCountryName="";
     public SimpleCursorAdapter mAdapter;
+    public String lat;
+    public String lon;
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public boolean manualSearchFlag = false;
 
     @Override
     protected void onStart() {
@@ -131,9 +142,18 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white);
         }
 
-
-        cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
-        actvCityCountryName.setText(cityCountryName);
+        // Asking for GPS permission if it's not granted by user
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+        }
+        else{
+            // If user has given permission then starting location service to get geographic coordinates.
+            tvCityCountryName.setText("Getting location");
+            Intent intent = new Intent(MainActivity.this, LocationService.class);
+            startService(intent);
+        }
 
 
         if (database.isOpen()) {
@@ -174,6 +194,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             // Update the parent class's TextView
             actvCityCountryName.setText(cityCountryName);
 
+            manualSearchFlag = true;
+
             requestWeather();
             hideKeyboard();
         });
@@ -188,10 +210,41 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @org.jetbrains.annotations.NotNull String[] permissions, @NonNull @org.jetbrains.annotations.NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == MY_PERMISSIONS_REQUEST_LOCATION)
+        {
+            Log.v("permission",grantResults[0]+" ");
+            // If user granted request then start location service to get geographic coordinates else displays last searched locations weather details
+            if(grantResults[0]==PackageManager.PERMISSION_GRANTED)
+            {
+                tvCityCountryName.setText("Getting location");
+                Intent intent = new Intent(MainActivity.this,LocationService.class);
+                startService(intent);
+            }
+            else
+            {
+                cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
+                actvCityCountryName.setText(cityCountryName);
+                Toast.makeText(getApplicationContext(),"location permission is not given \nDisplaying last searched location",Toast.LENGTH_SHORT).show();
+                requestWeather();
+            }
+        }
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         sharedPreferences.edit().putString(CITY_COUNTRY_NAME, cityCountryName).apply();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(LocationService.ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(locationReceiver, filter);
     }
 
     public void createLocalCityDB() {
@@ -454,6 +507,37 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         });
     }
 
+    private void requestWeatherUsingCoordinates() {
+        weatherApi.getWeatherUsingCoordinates(lat,lon, API_KEY).enqueue(new Callback<Response>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponse(@NonNull Call<Response> call, @NonNull retrofit2.Response<Response> response) {
+                Response model = response.body();
+
+                if (model != null) {
+                    Log.d(TAG, model.toString());
+
+                    tvCityCountryName.setText(model.getName() + ", " + model.getSys().getCountry());
+                    tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" + (model.getWeather().get(0).getDescription() + ")"));
+                    tvTemperature.setText("" + Math.round((model.getMain().getTemp() - 273.15)) + (char) 0x00B0 + "C");
+                    tvHumidity.setText(model.getMain().getHumidity() + "%");
+                    tvPressure.setText(model.getMain().getPressure() + " hPa");
+                    tvWindSpeedDegrees.setText(model.getWind().getSpeed() + " mps, " + model.getWind().getDeg() + (char) 0x00B0);
+
+                    requestWeatherIcon(model);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Response> call, @NonNull Throwable t) {
+                Toast.makeText(MainActivity.this, "Check internet connection or try again later", Toast.LENGTH_SHORT)
+                        .show();
+                Log.d(TAG, "Weather request error: " + t.getMessage());
+            }
+        });
+    }
+
+
     /**
      * BitmapFactory.decodeStream method needs background thread
      */
@@ -485,6 +569,32 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             }
         });
     }
+    // listening for broadcasts from location service
+    private BroadcastReceiver locationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int result = intent.getIntExtra("result",0);
+            if(!manualSearchFlag) {
+                // if it get result 0 that means location access is not given by user. if 2 then location is off in device, otherwise we got the coordinates from service.
+                if (result == 0) {
+                    cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
+                    actvCityCountryName.setText(cityCountryName);
+                    tvCityCountryName.setText(" ");
+                    requestWeather();
+                    Toast.makeText(getApplicationContext(), "location permission is not given \nDisplaying last searched location", Toast.LENGTH_SHORT).show();
+                } else if (result == 1) {
+                    // Displaying coordinates to user
+                    lat = String.valueOf(intent.getDoubleExtra("lat", 0.0));
+                    lon = String.valueOf(intent.getDoubleExtra("longi", 0.0));
+                    requestWeatherUsingCoordinates();
+
+                } else {
+                    tvCityCountryName.setText(" ");
+                    Toast.makeText(getApplicationContext(), "location is off in your device \nEnter the place manually", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
 }
 
 

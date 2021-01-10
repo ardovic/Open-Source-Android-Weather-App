@@ -11,8 +11,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ardovic.weatherappprototype.InternetConnectivityHelper;
 import com.ardovic.weatherappprototype.R;
 import com.google.gson.JsonObject;
 
@@ -32,14 +34,27 @@ import java.util.ArrayList;
 public class AboutUs extends AppCompatActivity {
 private ListView listView_Contributors;
 public static final String TAG="AboutUs";
+
+private InternetConnectivityHelper internetConnectivityHelper;
+
     ArrayList<String> arrayList_username;
+    TextView checkInternet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_us);
         listView_Contributors=findViewById(R.id.contributor_list);
+        checkInternet = findViewById(R.id.check_internet);
+        internetConnectivityHelper = new InternetConnectivityHelper(this);
 
-        new FetchContributors().execute();
+        if (internetConnectivityHelper.checkDeviceConnectedToInternet()) {
+            checkInternet.setVisibility(View.GONE);
+            new FetchContributors().execute();
+        }
+        else {
+            checkInternet.setVisibility(View.VISIBLE);
+            Toast.makeText(this, getResources().getString(R.string.check_internet_connection), Toast.LENGTH_SHORT).show();
+        }
     }
 
 

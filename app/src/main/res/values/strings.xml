@@ -8,6 +8,7 @@
     <string name="action_settings">Settings</string>
     <string name="share">Share</string>
     <string name="notImplementedYetToast">Not implemented yet :/</string>
+    <string name="check_internet_connection">Check your Internet Connection</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello ! This is where the fragments will be placed.

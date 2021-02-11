@@ -113,13 +113,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean manualSearchFlag = false;
 
-    private String temperature = "--";
-    private String humidity = "--";
-    private String wind = "--";
-    private String pressure = "--";
-    private String conditionDescription = "";
-    private String icon = "";
-
     @Override
     protected void onStart() {
         super.onStart();

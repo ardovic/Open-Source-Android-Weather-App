@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -111,102 +113,131 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean manualSearchFlag = false;
 
+    private String temperature = "--";
+    private String humidity = "--";
+    private String wind = "--";
+    private String pressure = "--";
+    private String conditionDescription = "";
+    private String icon = "";
+
     @Override
     protected void onStart() {
         super.onStart();
+        cityCountryName = sharedPreferences.getString(CITY_COUNTRY_NAME, "");
         if (!cityCountryName.equals("")) {
             requestWeather();
         }
     }
 
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            manualSearchFlag = true;
+        }
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+            setContentView(R.layout.activity_main);
+            ButterKnife.bind(this);
 
-        // Initializations
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar_main);
+            // Initializations
+            drawerLayout = findViewById(R.id.drawer_layout);
+            navigationView = findViewById(R.id.nav_view);
+            toolbar = findViewById(R.id.toolbar_main);
 
-        // Sets the Toolbar to act as the ActionBar for this Activity
-        setSupportActionBar(toolbar);
+            // Sets the Toolbar to act as the ActionBar for this Activity
+            setSupportActionBar(toolbar);
 
-        // Disable title (There is a textView instead of title, so we can skip the title)
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+            // Disable title (There is a textView instead of title, so we can skip the title)
+            Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white);
-        }
+            /// disable rotation on phones ///
+            isTablet(this);
 
-        // Asking for GPS permission if it's not granted by user
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-        }
-        else{
-            // If user has given permission then starting location service to get geographic coordinates.
-            tvCityCountryName.setText("Getting location");
-            Intent intent = new Intent(MainActivity.this, LocationService.class);
-            startService(intent);
-        }
-
-
-        if (database.isOpen()) {
-            checkDatabaseState();
-        } else {
-            database = databaseHelper.getReadableDatabase();
-            checkDatabaseState();
-        }
-
-        // Create a SimpleCursorAdapter for the State Name field.
-        mAdapter = new SimpleCursorAdapter(this,
-                R.layout.dropdown_text,
-                null,
-                new String[]{CITY_COUNTRY_NAME},
-                new int[]{R.id.text}, 0);
-        mAdapter.setFilterQueryProvider(constraint -> {
-            if (constraint != null) {
-                if (constraint.length() >= 3 && !TextUtils.isEmpty(constraint)) {
-                    Bundle bundle = new Bundle();
-                    String query = charArrayUpperCaser(constraint);
-                    bundle.putString(CITY_ARGS, query);
-                    getLoaderManager().restartLoader(0, bundle, MainActivity.this).forceLoad();
-                }
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white);
             }
-            return null;
-        });
 
-        // Set an OnItemClickListener, to update dependent fields when
-        // a choice is made in the AutoCompleteTextView.
-        actvCityCountryName.setOnItemClickListener((listView, view, position, id) -> {
-            // Get the cursor, positioned to the corresponding row in the
-            // result set
-            Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+            // Asking for GPS permission if it's not granted by user
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            } else {
+                // If user has given permission then starting location service to get geographic coordinates.
+                tvCityCountryName.setText("Getting location");
+                Intent intent = new Intent(MainActivity.this, LocationService.class);
+                startService(intent);
+            }
 
-            // Get the state's capital from this row in the database.
-            cityCountryName = cursor.getString(cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME));
 
-            // Update the parent class's TextView
-            actvCityCountryName.setText(cityCountryName);
+            if (database.isOpen()) {
+                checkDatabaseState();
+            } else {
+                database = databaseHelper.getReadableDatabase();
+                checkDatabaseState();
+            }
 
-            manualSearchFlag = true;
+            // Create a SimpleCursorAdapter for the State Name field.
+            mAdapter = new SimpleCursorAdapter(this,
+                    R.layout.dropdown_text,
+                    null,
+                    new String[]{CITY_COUNTRY_NAME},
+                    new int[]{R.id.text}, 0);
+            mAdapter.setFilterQueryProvider(constraint -> {
+                if (constraint != null) {
+                    if (constraint.length() >= 3 && !TextUtils.isEmpty(constraint)) {
+                        Bundle bundle = new Bundle();
+                        String query = charArrayUpperCaser(constraint);
+                        bundle.putString(CITY_ARGS, query);
+                        getLoaderManager().restartLoader(0, bundle, MainActivity.this).forceLoad();
+                    }
+                }
+                return null;
+            });
 
-            requestWeather();
-            hideKeyboard();
-        });
+            // Set an OnItemClickListener, to update dependent fields when
+            // a choice is made in the AutoCompleteTextView.
+            actvCityCountryName.setOnItemClickListener((listView, view, position, id) -> {
+                // Get the cursor, positioned to the corresponding row in the
+                // result set
+                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
-        actvCityCountryName.setAdapter(mAdapter);
+                // Get the state's capital from this row in the database.
+                cityCountryName = cursor.getString(cursor.getColumnIndexOrThrow(CITY_COUNTRY_NAME));
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                // Update the parent class's TextView
+                actvCityCountryName.setText(cityCountryName);
 
-        // Activate navigation drawer's listener
-        activateDrawerListener();
+                manualSearchFlag = true;
+                requestWeather();
+                hideKeyboard();
+            });
+
+            actvCityCountryName.setAdapter(mAdapter);
+
+            actionBarDrawerToggle = new ActionBarDrawerToggle(
+                    this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+            // Activate navigation drawer's listener
+            activateDrawerListener();
+
+    }
+
+    /// check if device is a tablet or a phone ///
+    public void isTablet(Context context) {
+        boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
+        boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+
+        if(!xlarge && !large)
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
@@ -490,10 +521,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     tvCityCountryName.setText(model.getName() + ", " + model.getSys().getCountry());
                     tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" + (model.getWeather().get(0).getDescription() + ")"));
                     tvTemperature.setText("" + Math.round((model.getMain().getTemp() - 273.15)) + (char) 0x00B0 + "C");
-                    tvHumidity.setText(model.getMain().getHumidity() + "%");
+                    tvHumidity.setText( model.getMain().getHumidity() + "%");
                     tvPressure.setText(model.getMain().getPressure() + " hPa");
                     tvWindSpeedDegrees.setText(model.getWind().getSpeed() + " mps, " + model.getWind().getDeg() + (char) 0x00B0);
-
                     requestWeatherIcon(model);
                 }
             }
@@ -520,10 +550,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     tvCityCountryName.setText(model.getName() + ", " + model.getSys().getCountry());
                     tvConditionDescription.setText(model.getWeather().get(0).getMain() + " (" + (model.getWeather().get(0).getDescription() + ")"));
                     tvTemperature.setText("" + Math.round((model.getMain().getTemp() - 273.15)) + (char) 0x00B0 + "C");
-                    tvHumidity.setText(model.getMain().getHumidity() + "%");
+                    tvHumidity.setText( model.getMain().getHumidity() + "%");
                     tvPressure.setText(model.getMain().getPressure() + " hPa");
                     tvWindSpeedDegrees.setText(model.getWind().getSpeed() + " mps, " + model.getWind().getDeg() + (char) 0x00B0);
-
                     requestWeatherIcon(model);
                 }
             }

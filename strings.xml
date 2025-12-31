@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Application Météo</string>
+    <string name="settings">Paramètres</string>
+    <string name="temperature">Température</string>
+    <string name="humidity">Humidité</string>
+    <string name="wind">Vent</string>
+</resources>
